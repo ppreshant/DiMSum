@@ -78,7 +78,7 @@ Pandoc comes bundled with [RStudio](https://rstudio.com/products/rstudio/downloa
 **OPTIONAL:** Additionally, if raw FASTQ files will be processed (with DiMSum *WRAP*), the following software needs to be installed:
 
 * **[_FastQC_](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) v0.11**
-* **[_Cutadapt_](https://cutadapt.readthedocs.io/en/stable/) v2.4**
+* **[_Cutadapt_](https://cutadapt.readthedocs.io/en/stable/) >=v2.4**
 * **[_VSEARCH_](https://github.com/torognes/vsearch) >=v2.17**
 * **[_Starcode_](https://github.com/gui11aume/starcode) v1.3**
 
