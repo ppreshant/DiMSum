@@ -12,6 +12,7 @@ dependencies:
   - bioconductor-biostrings
   - bioconductor-iranges
   - bioconductor-shortread
+  - bioconductor-genomeinfodbdata # added due to error 9/Sep/26
   - r-cairo
   - r-cowplot
   - r-data.table
