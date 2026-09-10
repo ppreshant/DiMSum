@@ -9,5 +9,10 @@ mkdir -p $output_dir
 DiMSum --fastqFileDir ../data/ \
     --experimentDesignPath config/della_pilot_ez.txt \
     --wildtypeSequence "$(cat config/della_wt.txt)" \
-    -o $output_dir
+    --stranded F \
+    --cutadapt5First GTCTTTCAAACCACGGGACTAGTTCTAGTAGCTCATCAATTTCTAAGGATAAGATGATGATG \
+    --cutadapt5Second GTTGCTGCTAGCGGGTAGAG \
+    -o $output_dir \
+    --numCores 3
+
 
