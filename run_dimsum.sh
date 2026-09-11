@@ -10,8 +10,10 @@ DiMSum --fastqFileDir ../data/ \
     --experimentDesignPath config/della_pilot_ez.txt \
     --wildtypeSequence "$(cat config/della_wt.txt)" \
     --stranded F \
-    --cutadapt5First GTCTTTCAAACCACGGGACTAGTTCTAGTAGCTCATCAATTTCTAAGGATAAGATGATGATG \
+    --cutadapt5First GCTCATCAATTTCTAAGGATAAGATGATGATG \
+    --cutadapt3First CTCTACCCGCTAGCAGCAAC \
     --cutadapt5Second GTTGCTGCTAGCGGGTAGAG \
+    --cutadapt3Second CATCATCATCTTATCCTTAGAAATTGATGAGC \
     -o $output_dir \
     --numCores 3
 
