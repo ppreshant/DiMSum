@@ -2,8 +2,8 @@
 
 #SBATCH --nodes=1
 #SBATCH --job-name=dimsum
-#SBATCH --output=slurm_logs/%j.out
-#SBATCH --error=slurm_logs/%j.err
+#SBATCH --output=logs_slurm/%j.out
+#SBATCH --error=logs_slurm/%j.err
 #SBATCH --time=2:00:00          
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=6G
