@@ -25,6 +25,6 @@ DiMSum --fastqFileDir ../data/ \
     --cutadapt5Second "$cutadapt_5_second" \
     --cutadapt3Second "$cutadapt_3_second" \
     -o "$output_dir" \
-    --numCores 3
+    --numCores 7
 
 

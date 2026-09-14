@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --job-name=novogene_dl
-#SBATCH --output=novogene_dl_%j.out
-#SBATCH --error=novogene_dl_%j.err
+#SBATCH --job-name=dimsum
+#SBATCH --output=slurm_logs/%j.out
+#SBATCH --error=slurm_logs/%j.err
 #SBATCH --time=2:00:00          
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=6G
