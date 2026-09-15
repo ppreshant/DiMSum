@@ -35,6 +35,11 @@ fi
 # The parameter file contains the shell variables used below; need to source it
 source "$params_file"
 
+# Convert the wildtype sequence and cutadapt sequences to uppercase to ensure consistency
+wildtype_sequence=$(printf '%s' "$wildtype_sequence" | tr '[:lower:]' '[:upper:]')
+cutadapt_5_first=$(printf '%s' "$cutadapt_5_first" | tr '[:lower:]' '[:upper:]')
+cutadapt_5_second=$(printf '%s' "$cutadapt_5_second" | tr '[:lower:]' '[:upper:]')
+
 mkdir -p "$output_dir"
 
 # writing the command to run dimsum for quick port/test in HPC before running slurm
