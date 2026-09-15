@@ -1,0 +1,4 @@
+wildtype_sequence="ttctccttcggtacatccagctgatgagtcccaaataggacgaaatacataccagccgaaaggcccttggcaggtgtcctggattccacgaaggagat"
+
+cutadapt_5_first="GTTGCCATCTCAAGCTTCTAAGTAA"
+cutadapt_5_second="gaaattcgcctcgagttaggat"
