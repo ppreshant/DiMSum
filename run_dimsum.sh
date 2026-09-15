@@ -43,9 +43,7 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --wildtypeSequence "$wildtype_sequence" \
     --stranded F \
     --cutadapt5First "$cutadapt_5_first" \
-    --cutadapt3First "$cutadapt_3_first" \
     --cutadapt5Second "$cutadapt_5_second" \
-    --cutadapt3Second "$cutadapt_3_second" \
     -o "$output_dir" \
     --numCores 7
 
