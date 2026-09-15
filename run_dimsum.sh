@@ -50,6 +50,6 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
-    --numCores 7
+    --numCores 8
 
 
