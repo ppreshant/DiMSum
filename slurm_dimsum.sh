@@ -104,7 +104,7 @@ section_selected() {
 }
 
 ## key variables ----------------------------------
-scratch_dir="/scratch/alpine/$USER/"
+scratch_dir="/scratch/alpine/$USER"
 output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
 
 # load modules and activate the environment used by the selected sections

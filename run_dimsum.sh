@@ -5,7 +5,7 @@
 # Usage: ./run_dimsum.sh [run_name]
 
 # options: local run vs slurm 
-scratch_dir="/scratch/alpine/c838573989@colostate.edu/"
+scratch_dir="/scratch/alpine/$USER"
 
 # data_dir="../data" # local data directory (for testing)
 data_dir="${scratch_dir}/data_staging" # HPC data directory
