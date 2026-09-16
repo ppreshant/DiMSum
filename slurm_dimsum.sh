@@ -151,12 +151,15 @@ if section_selected copy; then
 	REMOTE="onedrive_csu:Databases/Novogene NGS sequencing/pk_analysis_temp/${run_name}"
 	rclone mkdir "$REMOTE"
 
-	echo "Copying results to sharepoint: \n$REMOTE"
+	echo "Copying results to sharepoint: $REMOTE"
 	stage_start=$(date +%s)
 	echo "rclone started: $(date --iso-8601=seconds)"
 
-	# rclone copy step
-	rclone copy "${output_dir}" "$REMOTE" --progress
+	# rclone copy step 
+	rclone copy "${output_dir}" "$REMOTE" \
+    --ignore-checksum --ignore-size \
+    --transfers=4 --checkers=8 
+    # note: (don't check file size on transfer, sharepoint side processing issue)
 
 	echo "rclone finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
 	echo "Job finished: $(date --iso-8601=seconds) (total elapsed: $(( ($(date +%s) - job_start) / 60 )) minutes)"
