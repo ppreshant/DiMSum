@@ -158,6 +158,7 @@ if section_selected copy; then
 	# rclone copy step 
 	rclone copy "${output_dir}" "$REMOTE" \
     --ignore-checksum --ignore-size \
+    --verbose --stats-one-line \
     --transfers=4 --checkers=8 
     # note: (don't check file size on transfer, sharepoint side processing issue)
 
