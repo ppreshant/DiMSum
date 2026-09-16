@@ -29,18 +29,17 @@ set -euo pipefail
 
 # Run dimsum
 run_name="${1:-della_pilot_ez}"
-./run_dimsum.sh "$run_name"
+source ./run_dimsum.sh "$run_name"
 
 # Create a compact, user-facing variant table after DiMSum completes.
-merge_file="results/${run_name}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
-user_file="results/${run_name}/variant_data_parsed.tsv"
+merge_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
+user_file="${output_dir}/variant_data_parsed.tsv"
 python scripts/parse_variant_data.py "$merge_file" "$user_file"
 
 # use rclone to copy the results to the cloud storage (if needed)
 module load rclone
 REMOTE="onedrive_csu:Databases/Novogene NGS sequencing/pk_analysis_temp/pk_analysis_temp/${run_name}"
 rclone mkdir "$REMOTE"
-LOCAL="results/${run_name}"
 
 echo "Copying results to sharepoint: \n$REMOTE"
-rclone copy "$LOCAL" "$REMOTE" --progress
+rclone copy "${output_dir}" "$REMOTE" --progress

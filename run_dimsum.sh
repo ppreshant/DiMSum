@@ -5,8 +5,10 @@
 # Usage: ./run_dimsum.sh [run_name]
 
 # options: local run vs slurm 
+scratch_dir="/scratch/alpine/c838573989@colostate.edu/"
+
 # data_dir="../data" # local data directory (for testing)
-data_dir="/scratch/alpine/c838573989@colostate.edu/data_staging" # HPC data directory
+data_dir="${scratch_dir}/data_staging" # HPC data directory
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
 run_name="${1:-della_pilot_ez}"
@@ -15,7 +17,7 @@ run_name="${1:-della_pilot_ez}"
 params_file="config/${run_name}.params"
 experiment_design="config/${run_name}.txt"
 fastq_dir="${data_dir}/${run_name}"
-output_dir="results/${run_name}"
+export output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
 
 # file checks: 
 
