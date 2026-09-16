@@ -18,6 +18,7 @@ params_file="config/${run_name}.params"
 experiment_design="config/${run_name}.txt"
 fastq_dir="${data_dir}/${run_name}"
 output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
+num_cores="${SLURM_CPUS_PER_TASK:-3}"
 
 # file checks: 
 
@@ -52,6 +53,6 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
-    --numCores 8
+    --numCores "$num_cores"
 
 
