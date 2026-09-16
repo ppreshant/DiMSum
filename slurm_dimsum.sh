@@ -29,7 +29,11 @@ set -euo pipefail
 
 # Run dimsum
 run_name="${1:-della_pilot_ez}"
-source ./run_dimsum.sh "$run_name"
+./run_dimsum.sh "$run_name"
+
+# key variables
+scratch_dir="/scratch/alpine/c838573989@colostate.edu/"
+output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
 
 # Create a compact, user-facing variant table after DiMSum completes.
 merge_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"

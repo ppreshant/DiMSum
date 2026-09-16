@@ -17,7 +17,7 @@ run_name="${1:-della_pilot_ez}"
 params_file="config/${run_name}.params"
 experiment_design="config/${run_name}.txt"
 fastq_dir="${data_dir}/${run_name}"
-export output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
+output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
 
 # file checks: 
 
