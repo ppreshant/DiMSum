@@ -6,7 +6,15 @@
 	],
 	"settings": {
 		"chat.tools.terminal.autoApprove": {
-			"awk": true
+			"awk": true,
+			"/^python scripts/parse_variant_data\\.py results/della_pilot_ez/DiMSum_Project/DiMSum_Project_variant_data_merge\\.tsv results/della_pilot_ez/DiMSum_Project/DiMSum_Project_variant_data_user\\.tsv && python -m py_compile scripts/parse_variant_data\\.py$/": {
+				"approve": true,
+				"matchCommandLine": true
+			},
+			"/^python scripts/parse_variant_data\\.py results/della_pilot_ez/DiMSum_Project/DiMSum_Project_variant_data_merge\\.tsv results/della_pilot_ez/DiMSum_Project/DiMSum_Project_variant_data_user\\.tsv && python -m py_compile scripts/parse_variant_data\\.py && python - <<'PY'\nimport csv\nfrom pathlib import Path\n\npath = Path\\('results/della_pilot_ez/DiMSum_Project/DiMSum_Project_variant_data_user\\.tsv'\\)\nwith path\\.open\\(newline=''\\) as handle:\n    rows = list\\(csv\\.DictReader\\(handle, delimiter='\\\\t'\\)\\)\ninput_frequency_columns = \\[\n    column for column in rows\\[0\\]\n    if 'input' in column\\.lower\\(\\) and column\\.endswith\\('_freq'\\)\n\\]\nassert input_frequency_columns\nsort_column = input_frequency_columns\\[0\\]\nvalues = \\[float\\(row\\[sort_column\\]\\) for row in rows\\]\nassert values == sorted\\(values, reverse=True\\)\nprint\\(f'validated descending sort by first input frequency column: \\{sort_column\\}'\\)\nPY$/": {
+				"approve": true,
+				"matchCommandLine": true
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@
 
 import argparse
 import csv
+import re
 from pathlib import Path
 
 
@@ -119,10 +120,11 @@ def main():
     input_frequency_columns = [
         column[:-6] + "_freq"
         for column in count_columns
-        if column.startswith("input_")
+        if re.search(r"input", column, re.IGNORECASE)
     ]
     if not input_frequency_columns:
-        raise ValueError("No columns starting with 'input_' and ending in '_count' were found")
+        raise ValueError("No columns containing 'input' and ending in '_count' were found")
+    input_frequency_columns = input_frequency_columns[:1]
 
     totals = count_totals(input_path, count_columns)
     output_path.parent.mkdir(parents=True, exist_ok=True)
