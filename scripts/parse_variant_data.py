@@ -63,12 +63,16 @@ def write_output(
     input_frequency_columns,
     totals,
 ):
-    output_columns = []
-    for column in selected_columns:
-        output_columns.append(column)
-        if column.endswith("_count"):
-            output_columns.extend([column[:-6] + "_freq", column[:-6] + "_percent"])
-    output_columns.append("sequence_length")
+    identifier_columns = [column for column in selected_columns if column not in count_columns]
+    percent_columns = [column[:-6] + "_percent" for column in count_columns]
+    frequency_columns = [column[:-6] + "_freq" for column in count_columns]
+    output_columns = [
+        *identifier_columns,
+        *percent_columns,
+        *frequency_columns,
+        *count_columns,
+        "sequence_length",
+    ]
 
     output_rows = []
     with input_path.open(newline="") as input_file:
