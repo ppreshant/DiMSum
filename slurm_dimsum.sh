@@ -35,7 +35,7 @@ run_name="${1:-della_pilot_ez}"
 stage_start=$(date +%s)
 echo "DiMSum started: $(date --iso-8601=seconds)"
 ./run_dimsum.sh "$run_name"
-echo "DiMSum finished: $(date --iso-8601=seconds) (elapsed: $(( $(date +%s) - stage_start )) seconds)"
+echo "DiMSum finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
 
 # key variables
 scratch_dir="/scratch/alpine/c838573989@colostate.edu/"
@@ -46,8 +46,11 @@ merge_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
 user_file="${output_dir}/variant_data_parsed.tsv"
 stage_start=$(date +%s)
 echo "Variant parsing started: $(date --iso-8601=seconds)"
+
+# Run the Python script to parse the variant data
 python scripts/parse_variant_data.py "$merge_file" "$user_file"
-echo "Variant parsing finished: $(date --iso-8601=seconds) (elapsed: $(( $(date +%s) - stage_start )) seconds)"
+
+echo "Variant parsing finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
 
 # use rclone to copy the results to the cloud storage (if needed)
 module load rclone
@@ -57,6 +60,9 @@ rclone mkdir "$REMOTE"
 echo "Copying results to sharepoint: \n$REMOTE"
 stage_start=$(date +%s)
 echo "rclone started: $(date --iso-8601=seconds)"
+
+# rclone copy step
 rclone copy "${output_dir}" "$REMOTE" --progress
-echo "rclone finished: $(date --iso-8601=seconds) (elapsed: $(( $(date +%s) - stage_start )) seconds)"
-echo "Job finished: $(date --iso-8601=seconds) (total elapsed: $(( $(date +%s) - job_start )) seconds)"
+
+echo "rclone finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
+echo "Job finished: $(date --iso-8601=seconds) (total elapsed: $(( ($(date +%s) - job_start) / 60 )) minutes)"
