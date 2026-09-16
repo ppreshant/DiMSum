@@ -7,3 +7,6 @@ DiMSum_Project/
 *output*/
 *results*/
 scripts/__pycache__/parse_variant_data.cpython-314.pyc
+
+# slurm logs 
+logs_slurm/

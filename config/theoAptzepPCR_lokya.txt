@@ -1,0 +1,6 @@
+sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
+InputEpPCR	1	0		1	GS2558epPCRInputLib_R1_001.fastq.gz	GS2558epPCRInputLib_R2_001.fastq.gz
+neg25uM5fDUTheoEpPCR	1	1	1	1	GS2560epPCR25uMpassedLib_R1_001.fastq.gz	GS2560epPCR25uMpassedLib_R2_001.fastq.gz
+neg50uM5fDUTheoEpPCR	1	1	2	1	GS2561epPCR50uMpassedLib_R1_001.fastq.gz	GS2561epPCR50uMpassedLib_R2_001.fastq.gz
+neg75uM5fDUTheoEpPCR	1	1	3	1	GS2562epPCR75uMpassedLib_R1_001.fastq.gz	GS2562epPCR75uMpassedLib_R2_001.fastq.gz
+Cneg25uMNoTheoEpPCR	1	1	4	1	GS2593epPCR25uMNoTheoLib_R1_001.fastq.gz	GS2593epPCR25uMNoTheoLib_R2_001.fastq.gz
