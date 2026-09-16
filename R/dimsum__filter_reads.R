@@ -44,7 +44,7 @@ dimsum__filter_reads <- function(
 
   #Process FASTQ files
   initial_write <- TRUE #records written to output file already?
-  yield_size <- 1e6
+  yield_size <- 1e5
   f1 <- ShortRead::FastqStreamer(input_FASTQ, n=yield_size)
   #Read input FASTQ files in chunks
   while(length(fq1 <- ShortRead::yield(f1))){
