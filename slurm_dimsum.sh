@@ -54,7 +54,7 @@ echo "Variant parsing finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date
 
 # use rclone to copy the results to the cloud storage (if needed)
 module load rclone
-REMOTE="onedrive_csu:Databases/Novogene NGS sequencing/pk_analysis_temp/pk_analysis_temp/${run_name}"
+REMOTE="onedrive_csu:Databases/Novogene NGS sequencing/pk_analysis_temp/${run_name}"
 rclone mkdir "$REMOTE"
 
 echo "Copying results to sharepoint: \n$REMOTE"
