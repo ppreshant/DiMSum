@@ -4,6 +4,7 @@
 
 import argparse
 import csv
+import re
 from pathlib import Path
 
 
@@ -62,12 +63,16 @@ def write_output(
     input_frequency_columns,
     totals,
 ):
-    output_columns = []
-    for column in selected_columns:
-        output_columns.append(column)
-        if column.endswith("_count"):
-            output_columns.extend([column[:-6] + "_freq", column[:-6] + "_percent"])
-    output_columns.append("sequence_length")
+    identifier_columns = [column for column in selected_columns if column not in count_columns]
+    percent_columns = [column[:-6] + "_percent" for column in count_columns]
+    frequency_columns = [column[:-6] + "_freq" for column in count_columns]
+    output_columns = [
+        *identifier_columns,
+        *percent_columns,
+        *frequency_columns,
+        *count_columns,
+        "sequence_length",
+    ]
 
     output_rows = []
     with input_path.open(newline="") as input_file:
@@ -119,10 +124,11 @@ def main():
     input_frequency_columns = [
         column[:-6] + "_freq"
         for column in count_columns
-        if column.startswith("input_")
+        if re.search(r"input", column, re.IGNORECASE)
     ]
     if not input_frequency_columns:
-        raise ValueError("No columns starting with 'input_' and ending in '_count' were found")
+        raise ValueError("No columns containing 'input' and ending in '_count' were found")
+    input_frequency_columns = input_frequency_columns[:1]
 
     totals = count_totals(input_path, count_columns)
     output_path.parent.mkdir(parents=True, exist_ok=True)

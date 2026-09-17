@@ -5,7 +5,7 @@
 # Usage: ./run_dimsum.sh [run_name]
 
 # options: local run vs slurm 
-scratch_dir="/scratch/alpine/c838573989@colostate.edu/"
+scratch_dir="/scratch/alpine/$USER"
 
 # data_dir="../data" # local data directory (for testing)
 data_dir="${scratch_dir}/data_staging" # HPC data directory
@@ -49,7 +49,8 @@ mkdir -p "$output_dir"
 DiMSum --fastqFileDir "$fastq_dir" \
     --experimentDesignPath "$experiment_design" \
     --wildtypeSequence "$wildtype_sequence" \
-    --stranded F \
+    --stranded F --sequenceType "noncoding" \
+    --maxSubstitutions 25 --indels 'all' \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
