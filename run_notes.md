@@ -7,6 +7,14 @@
 ## Used options
 - `--stranded F` : adjusts for strands that are reverse 
 
+---
+# Run notes
+
+## 17/Sep/26
+
+### demo with permissive, low memory
+sbatch slurm_dimsum.sh
+Submitted batch job 32663965
 
 
 # 16/Sep/26: 
