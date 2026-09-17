@@ -49,7 +49,8 @@ mkdir -p "$output_dir"
 DiMSum --fastqFileDir "$fastq_dir" \
     --experimentDesignPath "$experiment_design" \
     --wildtypeSequence "$wildtype_sequence" \
-    --stranded F \
+    --stranded F --sequenceType "noncoding" \
+    --maxSubstitutions 25 --indels 'all' \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
