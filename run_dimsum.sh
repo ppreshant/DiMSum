@@ -23,7 +23,8 @@ params_file="config/${run_name}.params"
 experiment_design="config/${run_name}.txt"
 fastq_dir="${data_dir}/${run_name}"
 output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
-num_cores="${SLURM_CPUS_PER_TASK:-3}"
+# num_cores="${SLURM_CPUS_PER_TASK:-3}" # # not using; trying to fix OOM issues
+num_cores=3 # set to 3 cores to avoid OOM issues
 
 # file checks: 
 
@@ -60,6 +61,7 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
     --numCores "$num_cores" \
+    --retainIntermediateFiles=T \
     "${dimsum_args[@]}"
 
 
