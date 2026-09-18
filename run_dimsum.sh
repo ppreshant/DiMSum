@@ -2,7 +2,7 @@
 
 # runs dimsum on HPC. (activate using SLURM with the slurm_dimsum.sh script)
 # Run this within the DiMSum directory and the mamba environment.
-# Usage: ./run_dimsum.sh [run_name]
+# Usage: ./run_dimsum.sh [run_name] [dimsum_option ...]
 
 # options: local run vs slurm 
 scratch_dir="/scratch/alpine/$USER"
@@ -11,7 +11,12 @@ scratch_dir="/scratch/alpine/$USER"
 data_dir="${scratch_dir}/data_staging" # HPC data directory
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
-run_name="${1:-della_pilot_ez}"
+run_name="della_pilot_ez"
+if [[ $# -gt 0 && "$1" != --* ]]; then
+    run_name="$1"
+    shift
+fi
+dimsum_args=("$@")
 
 # Set the paths for the parameter file, experiment design, fastq directory, and output directory
 params_file="config/${run_name}.params"
@@ -54,6 +59,7 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
-    --numCores "$num_cores"
+    --numCores "$num_cores" \
+    "${dimsum_args[@]}"
 
 

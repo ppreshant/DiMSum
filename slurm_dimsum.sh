@@ -17,26 +17,34 @@ mkdir -p "$TMPDIR"
 # ------------------end of slurm stuff --------------
 
 # Usage:
-#   sbatch slurm_dimsum.sh [run_name] [--section section [section ...]]
+#   sbatch slurm_dimsum.sh [run_name] [--section section [section ...]] [-- dimsum_option ...]
 # Run all sections by default. Valid section keywords are: dimsum, parse, copy.
 # Examples:
 #   sbatch slurm_dimsum.sh
 #   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum parse
 #   sbatch slurm_dimsum.sh della_pilot_ez --section copy
+#   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum -- --startStage 4
 
 # source this file to help load modules (needed in non-interactive sessions)
 source ~/.bashrc
 
-run_name="${1:-della_pilot_ez}"
+run_name="della_pilot_ez"
 sections=()
 section_option_seen=false
+dimsum_args=()
 
 if [[ $# -gt 0 && "$1" != --* ]]; then
+	run_name="$1"
 	shift
 fi
 
 while [[ $# -gt 0 ]]; do
 	case "$1" in
+		--)
+			shift
+			dimsum_args=("$@")
+			break
+			;;
 		--section)
 			section_option_seen=true
 			shift
@@ -53,7 +61,7 @@ while [[ $# -gt 0 ]]; do
 			shift
 			;;
 		--help|-h)
-			echo "Usage: sbatch slurm_dimsum.sh [run_name] [--section section [section ...]]"
+			echo "Usage: sbatch slurm_dimsum.sh [run_name] [--section section [section ...]] [-- dimsum_option ...]"
 			echo "Sections: dimsum, parse, copy (all run by default)"
 			exit 0
 			;;
@@ -122,7 +130,7 @@ if section_selected dimsum; then
 	# Run dimsum
 	stage_start=$(date +%s)
 	echo "DiMSum started: $(date --iso-8601=seconds)"
-	./run_dimsum.sh "$run_name"
+	./run_dimsum.sh "$run_name" "${dimsum_args[@]}"
 	echo "DiMSum finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
 fi
 
