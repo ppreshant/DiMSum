@@ -13,6 +13,39 @@
 
 # 17/Sep/26 : with permissive filtering, low memory optimizations
 
+## Lokya's reruns
+
+### (failed) Rerun lokya's data starting at stage 4: 
+- overwrites old files so saving the table, PDFs, and report.html in a side folder in sharepoint for backup.
+- [x] Check if this works or if starting from stage 4 requires fastq files pointed in the results dir instead. Can write a switch for this.
+_all stuff was pending so suspicious_
+  - Fails, file names after cutadapt are different; 
+```sh
+./2_trim/GS2555NNNCM25uMpassedLib_R2_001.fastq.gz.cutadapt1-forward.fastq.gz
+./2_trim/GS2556NNNCM50uMpassedLib_R2_001.fastq.gz.cutadapt.untrimmed.fastq.gz
+./2_trim/GS2592NNNCM25uMNoTheoLib_R1_001.fastq.gz.cutadapt1-forward.fastq.gz
+./2_trim/GS2553NNNCMInputLib_R2_001.fastq.gz.cutadapt.untrimmed.fastq.gz
+./2_trim/GS2592NNNCM25uMNoTheoLib_R2_001.fastq.gz.cutadapt1-reverse.fastq.gz
+./2_trim/GS2556NNNCM50uMpassedLib_R1_001.fastq.gz.cutadapt1-forward.fastq.gz
+```
+
+
+## NNN
+
+sbatch slurm_dimsum.sh theoAptzNNN_lokya
+- [x] (*completed*) Submitted batch job 32677190
+- [ ] reupload html files
+
+sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --startStage 4
+- [x] Submitted batch job 32676881 : failed: file not found
+
+
+## epPCR 
+same, completed without the start stage. 
+
+sbatch slurm_dimsum.sh theoAptzepPCR_lokya -- --startStage 4
+Submitted batch job 32676884
+
 
 ## 3R5 madison (*to-fix)
 sbatch slurm_dimsum.sh 3R5library_madison
