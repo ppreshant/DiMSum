@@ -1,9 +1,9 @@
 sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
-InputUra30C4NCM5	1	0		1	Ura30C4NCM5_R1_001.fastq.gz	Ura30C4NCM5_R2_001.fastq.gz
-UraTheo30C4NCM6	1	1	1	1	UraTheo30C4NCM6_R1_001.fastq.gz	UraTheo30C4NCM6_R2_001.fastq.gz
-UraHisVeh30C4NCM7	1	1	2	1	UraHisVeh30C4NCM7_R1_001.fastq.gz	UraHisVeh30C4NCM7_R2_001.fastq.gz
-UraHisTheo30C4NCM8	1	1	3	1	UraHisTheo30C4NCM8_R1_001.fastq.gz	UraHisTheo30C4NCM8_R2_001.fastq.gz
-UraTheo24C4NCM13	1	1	4	1	UraTheo24C4NCM13_R1_001.fastq.gz	UraTheo24C4NCM13_R2_001.fastq.gz
-UraHisTheo24C4NCM14	1	1	5	1	UraHisTheo24C4NCM14_R1_001.fastq.gz	UraHisTheo24C4NCM14_R2_001.fastq.gz
-UraTheo35C4NCM15	1	1	6	1	UraTheo35C4NCM15_R1_001.fastq.gz	UraTheo35C4NCM15_R2_001.fastq.gz
-UraHisTheo35C4NCM16	1	1	7	1	UraHisTheo35C4NCM16_R1_001.fastq.gz	UraHisTheo35C4NCM16_R2_001.fastq.gz
+InputUra30C4NCM5	1	0			Ura30C4NCM5_R1_001.fastq.gz	Ura30C4NCM5_R2_001.fastq.gz
+UraTheo30C4NCM6	1	1	1		UraTheo30C4NCM6_R1_001.fastq.gz	UraTheo30C4NCM6_R2_001.fastq.gz
+UraHisVeh30C4NCM7	1	1	2		UraHisVeh30C4NCM7_R1_001.fastq.gz	UraHisVeh30C4NCM7_R2_001.fastq.gz
+UraHisTheo30C4NCM8	1	1	3		UraHisTheo30C4NCM8_R1_001.fastq.gz	UraHisTheo30C4NCM8_R2_001.fastq.gz
+UraTheo24C4NCM13	1	1	4		UraTheo24C4NCM13_R1_001.fastq.gz	UraTheo24C4NCM13_R2_001.fastq.gz
+UraHisTheo24C4NCM14	1	1	5		UraHisTheo24C4NCM14_R1_001.fastq.gz	UraHisTheo24C4NCM14_R2_001.fastq.gz
+UraTheo35C4NCM15	1	1	6		UraTheo35C4NCM15_R1_001.fastq.gz	UraTheo35C4NCM15_R2_001.fastq.gz
+UraHisTheo35C4NCM16	1	1	7		UraHisTheo35C4NCM16_R1_001.fastq.gz	UraHisTheo35C4NCM16_R2_001.fastq.gz

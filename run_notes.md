@@ -1,5 +1,6 @@
 
-# 17/Sep/26 - params to change 
+# Params to change
+(done on 17/Sep/26) 
 - `--indels 'all'` : retains indels otherwise discarded by default
 - `--maxSubstitutions 25` : increase from the default of 2; arbitrary 25. 
 - `--sequenceType "noncoding"` : defaults to auto looking for premature stop codons, but let's set this
@@ -8,25 +9,40 @@
 - `--stranded F` : adjusts for strands that are reverse 
 
 ---
-# Run notes
+# Run notes ---
 
-## 17/Sep/26
+# 17/Sep/26 : with permissive filtering, low memory optimizations
 
-### demo with permissive, low memory
+
+## 3R5 madison (*to-fix)
+sbatch slurm_dimsum.sh 3R5library_madison
+Submitted batch job 32673400
+- went OOM on 5 segments after `Filtering aligned reads...` stage in the `dimsum_stage_vsearch.R` script (presumably, since that was the last `_message`
+
+## 4NCM, madison
+madison: 4NCM : merge Ls into R
+- No real need to trasnfer data: it's just single file so took the long time to just rename the files ; 
+  - transfer data from : /scratch/alpine/c838573989@colostate.edu/data_staging/4NCMLibrary_madison/ to .. projets/data
+  - rclone transfer to sharepoint for backup
+- For future reproducibility, you can do either;
+  - reset the config/.txt to use the old Lx filenames ; and add a switch to to correct file format `--fastqFileExtension ".fq"`
+  - Add a quick helper script to rename the files
+
+## demo 
 sbatch slurm_dimsum.sh
 Submitted batch job 32663965
-
+----
 
 # 16/Sep/26: 
 
-4:37 PM
+
 
 ## sbatch slurm_dimsum.sh 3R5library_madison
-
+_what happened here?_
 ---
 
 ## sbatch slurm_dimsum.sh 4NCMLibrary_madison
-error: 
+error: due to file extension being `.fq`
 
 
 
