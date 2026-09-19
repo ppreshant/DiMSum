@@ -42,9 +42,7 @@ _each ## entry has a (x) metric to call out status for glancing the status_
 - #O : to do something
 
 ## temp : job ids
-- [ ] 32703637
 
-- 
 ## Estimate scaling 
 - File sizes: not a good predictor ; _need length and depth too!_
 	`$ du -h -d 1 .`
@@ -67,7 +65,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 
 # 18/Sep/26: low numCores, keep intermediate files 
 
-## ( #R) 3R5 madison
+## (S) 3R5 madison
 
 - [x] (Run.. ; 19/Sep/26) run with 100 GB RAM, 26 cores (numCores=3) and 24 h: `32712083`
 ```sh
