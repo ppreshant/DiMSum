@@ -15,10 +15,10 @@
 		- `/tmp/3_align/*.{vsearch.gz,vsearch.prefilter.gz}`
 		- `/tmp/3_tally/*.{vsearch.gz,unique}`
 		- plus some demultiplex/unzip temporary FASTQ files in `tmp/0_demultiplex`-style paths.
-	> 	Quick command to find 
+	> 	Quick command to find these files ; last bit after `-exec` is to get size
 	```sh
-	find /home/runner/work/DiMSum/DiMSum/<outputPath>/<projectName>/tmp -type f \
-	\( -name "*.fastq" -o -name "*.fastq.gz" -o -name "*.cutadapt.gz" -o -name "*.cutadapt2.gz" -o -name "*.vsearch.gz" -o -name "*.vsearch.prefilter.gz" -o -name "*.unique" \)
+	find DiMSum_Project/tmp -type f \
+	\( -name "*.fastq" -o -name "*.fastq.gz" -o -name "*.cutadapt.gz" -o -name "*.cutadapt2.gz" -o -name "*.vsearch.gz" -o -name "*.vsearch.prefilter.gz" -o -name "*.unique" \) -exec du -ch {} + | grep total$
 	```
 - [ ] Reduce `--numCores` to 1 says Claude. _Runs longer but will use full 30GB so not OOM issue/memory starving. 
 	- [x] *can try 3 for starters?*
@@ -49,26 +49,43 @@ _each ## entry has a (x) metric to call out status for glancing the status_
 ## Estimate scaling 
 - File sizes: not a good predictor ; _need length and depth too!_
 	`$ du -h -d 1 .`
-	1.6G    ./theoAptzNNN_lokya    _S: 6 GB RAM, 8 cores; 5 samples_    98 bp    
-	9.2G    ./theoAptzepPCR_lokya    _S: 6 GB RAM, 8 cores ; 5 samples_    98 bp
-	8.2G    ./4NCMLibrary_madison    _F: 30 GB RAM; 8 cores, 8 samples_    76 bp
-	9.3G    ./3R5library_madison    _F: 30 GB RAM; 8 cores, 8 samples_    282 bp
-	38M     ./della_pilot_ez
-	309G    ./archive
-- Claude AI note:
+
+| Size | Dataset | Status / resources | Read length | seq/file |
+|---|---|---|---|---|
+| 1.6G | `./theoAptzNNN_lokya` | _S: 6 GB RAM, 8 cores; 5 samples_ | 98 bp |  |
+| 9.2G | `./theoAptzepPCR_lokya` | _S: 6 GB RAM, 8 cores; 5 samples_ | 98 bp |  |
+| 8.2G | `./4NCMLibrary_madison` | _F: 30 GB RAM; 8 cores, 8 samples_ | 76 bp | 24M |
+| 9.3G | `./3R5library_madison` | _F: 30 GB RAM; 8 cores, 8 samples_ | 282 bp | 102M |
+| 38M | `./della_pilot_ez` |  |  |
+| 309G | `./archive` |  |  |
+_Note:_ file length and size are from the Input, R1 read ~ taken to be representative.
+- Claude AI note: seq length influences memory for filtering. that and depth matter more than total size. 
 	> check `seff <jobid>` or `sstat -j <jobid> --format=MaxRSS` once it succeeds, to get actual peak RSS per worker or Core.
-	- The madison 4NCM job should be a better proxy due to longer reads than lokya's data!
+	- 4NCM, `seff` estimates: I got 20 GB use and 3 h wall time with 3 cores on 4ncm data with 76 bp, 25 m reads/file.
+  > So expect ~4x memory from the length increase alone → ~80GB for 3 cores. Depth (4x more reads) doesn't directly add memory, but do request some buffer: round up to ~90-100GB total to be safe.
+  > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
+  > Suggested to lower numCores to 1 or 2; _will try this later_
 
 # 18/Sep/26: low numCores, keep intermediate files 
 
 ## (F) 3R5 madison (*fix-memory-OOM*)
 
-sbatch slurm_dimsum.sh 3R5library_madison
-- [ ] Wait on 4NCM iterations with numCores 3 and 1 (and try 1) vs try high mem directly?
-- (17/Sep/26) Submitted batch job 32673400
+- [ ] (Run.. ; 19/Sep/26) run with 100 GB RAM, 26 cores (numCores=3) and 24 h: `32712083`
+```sh
+sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh 3R5library_madison
+```
+- [x] Wait on :4NCM iterations with numCores 3 and 1 (and try 1) vs ~~try high mem directly?~~
+- (F) (17/Sep/26) Submitted batch job 32673400
 	- went OOM on 5 segments after `Filtering aligned reads...` stage in the `dimsum_stage_vsearch.R` script (presumably, since that was the last `_message`
 
-## (R) 4NCM, madison
+## (S) 4NCM, madison
+
+
+- [x] Run with numCores 3, and saving intermediate files : 32703637
+	```sh
+	sbatch slurm_dimsum.sh 4NCMLibrary_madison
+	```
+- (17/Sep/26) Run stuff: (*failed after 2 h*) Got OOM killed again : 32676685
 
 (_unnecessary_) madison: 4NCM : merge Ls into R
 	- No real need to trasnfer data: it's just single file so took the long time to just rename the files ; 
@@ -77,12 +94,6 @@ sbatch slurm_dimsum.sh 3R5library_madison
 	- For future reproducibility, you can do either;
 	- reset the config/.txt to use the old Lx filenames ; and add a switch to to correct file format `--fastqFileExtension ".fq"`
 	- Add a quick helper script to rename the files
-
-- (17/Sep/26) Run stuff: (*failed after 2 h*) Got OOM killed again : 32676685
-- [ ] Run with numCores 3, and saving intermediate files : 32703637
-	```sh
-	sbatch slurm_dimsum.sh 4NCMLibrary_madison
-	```
 
 # 17/Sep/26 : with permissive filtering, low memory optimizations
 
