@@ -8,7 +8,7 @@
 - [x] `--sequenceType "noncoding"` : defaults to auto looking for premature stop codons, but let's set this
 ## Memory issues/restart
 - [x] use `--retainIntermediateFiles=T` to enable rerun from stage 3 for example when OOM killed. 
-	- [ ] *beware of large files in the `tmp/` dir ~* need to somehow identify remove before rclone transfer
+	- [x] *beware of large files in the `tmp/` dir ~* need to somehow identify remove before rclone transfer. _Jumps up from 11 GB (epPCR_lokya) to 26 GB (4NCM_madison) with this option_
 	- Cleanup notes from GH Copilot
 		> With `--retainIntermediateFiles=F`, DiMSum deletes staged intermediate files like:
 		- `/tmp/2_trim/*.{fastq,cutadapt.gz,cutadapt2.gz}`
@@ -20,7 +20,7 @@
 	find DiMSum_Project/tmp -type f \
 	\( -name "*.fastq" -o -name "*.fastq.gz" -o -name "*.cutadapt.gz" -o -name "*.cutadapt2.gz" -o -name "*.vsearch.gz" -o -name "*.vsearch.prefilter.gz" -o -name "*.unique" \) -exec du -ch {} + | grep total$
 	```
-- [ ] Reduce `--numCores` to 1 says Claude. _Runs longer but will use full 30GB so not OOM issue/memory starving. 
+- [ ] (*later*) Reduce `--numCores` to 1 says Claude. _Runs longer but will use full 30GB so not OOM issue/memory starving. 
 	- [x] *can try 3 for starters?*
 - Notes from Claude AI: **Suggested order:**
 	1. `numCores=1` with your current `yield_size` — quick test, no code changes needed elsewhere.
@@ -37,10 +37,9 @@
 _each ## entry has a (x) metric to call out status for glancing the status_
 - (S): Successful run
 - (F): Failed run
-- (P): Partial success, needed rerunning 
-- (R): Run in progress
-
-
+- (P): Partial success, needed rerunning later 
+- ( #R): Run in progress
+- #O : to do something
 
 ## temp : job ids
 - [ ] 32703637
@@ -68,9 +67,9 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 
 # 18/Sep/26: low numCores, keep intermediate files 
 
-## (F) 3R5 madison (*fix-memory-OOM*)
+## ( #R) 3R5 madison
 
-- [ ] (Run.. ; 19/Sep/26) run with 100 GB RAM, 26 cores (numCores=3) and 24 h: `32712083`
+- [x] (Run.. ; 19/Sep/26) run with 100 GB RAM, 26 cores (numCores=3) and 24 h: `32712083`
 ```sh
 sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh 3R5library_madison
 ```
@@ -98,20 +97,20 @@ sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh 3R5library_
 # 17/Sep/26 : with permissive filtering, low memory optimizations
 
 rerun full workflow of Lokya's
-## (p) NNN_Lokya
+## (S) NNN_Lokya
 
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 - [x] (*completed*) Submitted batch job 32677190
-- [ ] reupload html report file
+- [x] reupload html report file: remove the old report.html (*other fastq reports not essential ~ will be identical too?;*)
+```sh
+sbatch --mem=2G --cpus-per-task=1 --time=1:00:00 slurm_dimsum.sh theoAptzNNN_lokya --section copy
+```
+- (F)(failed) sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --startStage 4
+	- Submitted batch job 32676881 : failed: file not found
 
-sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --startStage 4
-- [x] Submitted batch job 32676881 : failed: file not found
-
-
-## (p) epPCR_Lokya
+## (S) epPCR_Lokya
 - [x] same, completed without the start stage. 32677192.out
-- [ ] reupload html report file
-
+- [x] reupload html report file: almost same cmd as above
 
 sbatch slurm_dimsum.sh theoAptzepPCR_lokya -- --startStage 4
 (failed) Submitted batch job 32676884
@@ -132,20 +131,13 @@ Rerun lokya's data starting at stage 4: _to save on the initial steps compute ti
 ./2_trim/GS2556NNNCM50uMpassedLib_R1_001.fastq.gz.cutadapt1-forward.fastq.gz
 ```
 
-
-
-
-
-
-
-## (S) demo 
+## (S) demo : della_pilot_ez
 sbatch slurm_dimsum.sh
 Submitted batch job 32663965
-----
+
 
 # 16/Sep/26: 
-
-
+_First run with default params, was truncating at hamming dist of 2_: labelled `2 mutations_only` / `upto 2 mutations`
 
 ## (F?) sbatch slurm_dimsum.sh 3R5library_madison
 _what happened here?_ ~ OOM?
