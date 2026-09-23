@@ -130,7 +130,7 @@ if section_selected dimsum; then
 	# Run dimsum
 	stage_start=$(date +%s)
 	echo "DiMSum started: $(date --iso-8601=seconds)"
-	./run_dimsum.sh "$run_name" "${dimsum_args[@]}"
+	./run_dimsum.sh --environment hpc "$run_name" "${dimsum_args[@]}"
 	echo "DiMSum finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
 fi
 
