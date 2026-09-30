@@ -63,8 +63,22 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
-# 18/Sep/26: low numCores, keep intermediate files 
+# 29/Sep/26+ : v2
+#v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
+## changes Ns
+- [ ] explore the masking with small letters in wt sequence
+	> **_--wildtypeSequence_** Wild-type nucleotide sequence (A/C/G/T). Lower-case bases (a/c/g/t) indicate internal constant regions to be removed (required if '_--runDemo_'=F)
+- ignore cutadapt trimming? ; *might mess up length distribution if not equal?*
+
+## Changes 3R5
+- [ ] don't trim / remove the `--cutadapt5Second` sequence; _since read is shorter than amplicon. ; how?
+	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
+- (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
+
+
+# 18/Sep/26: v1.2_low numCores, keep intermediate files 
+#v1
 ## (S) 3R5 madison
 
 - [x] (Run.. ; 19/Sep/26) run with 100 GB RAM, 26 cores (numCores=3) and 24 h: `32712083`
@@ -92,8 +106,8 @@ sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh 3R5library_
 	- reset the config/.txt to use the old Lx filenames ; and add a switch to to correct file format `--fastqFileExtension ".fq"`
 	- Add a quick helper script to rename the files
 
-# 17/Sep/26 : with permissive filtering, low memory optimizations
-
+# 17/Sep/26 : v1.1_with permissive filtering, low memory optimizations
+#v1 = permissive filtering (nham <= 25)
 rerun full workflow of Lokya's
 ## (S) NNN_Lokya
 
@@ -134,8 +148,8 @@ sbatch slurm_dimsum.sh
 Submitted batch job 32663965
 
 
-# 16/Sep/26: 
-_First run with default params, was truncating at hamming dist of 2_: labelled `2 mutations_only` / `upto 2 mutations`
+# 16/Sep/26:  v0
+#v0 = _First run with default params, was truncating at hamming dist of 2_: labelled `2 mutations_only` / `upto 2 mutations`
 
 ## (F?) sbatch slurm_dimsum.sh 3R5library_madison
 _what happened here?_ ~ OOM?
