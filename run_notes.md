@@ -63,7 +63,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
-# 29/Sep/26+ : v2
+# 1/Oct/26+ : v2
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
 ## changes Ns
@@ -72,9 +72,17 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 - ignore cutadapt trimming? ; *might mess up length distribution if not equal?*
 
 ## Changes 3R5
-- [ ] don't trim / remove the `--cutadapt5Second` sequence; _since read is shorter than amplicon. ; how?
+- [ ] don't trim / remove the `--cutadapt5Second` sequence; _since read is shorter than amplicon.
 	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
+
+## 3R5 - v2.0.1
+- [ ] Test out if the cutadapt without the `3First` / `3Second` options works. 
+	- *is unlikely looking at the cutadapt logs of 4NCM.*
+	- Need less RAM, lets do more cores to try. with start and stop stages
+```sh
+sbatch --mem=40G --cpus-per-task=12 --time=2:00:00 slurm_dimsum.sh 3R5library_madison -- --startStage 1 --stopStage 2 --numCores 8
+```
 
 
 # 18/Sep/26: v1.2_low numCores, keep intermediate files 
