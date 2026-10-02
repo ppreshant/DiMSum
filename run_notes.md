@@ -1,5 +1,5 @@
 
-# Params to change
+# Params to make it work!
 (done on 17/Sep/26) 
 
 ## Permissive filtering
@@ -20,8 +20,8 @@
 	find DiMSum_Project/tmp -type f \
 	\( -name "*.fastq" -o -name "*.fastq.gz" -o -name "*.cutadapt.gz" -o -name "*.cutadapt2.gz" -o -name "*.vsearch.gz" -o -name "*.vsearch.prefilter.gz" -o -name "*.unique" \) -exec du -ch {} + | grep total$
 	```
-- [ ] (*later*) Reduce `--numCores` to 1 says Claude. _Runs longer but will use full 30GB so not OOM issue/memory starving. 
-	- [x] *can try 3 for starters?*
+- (*later*) Reduce `--numCores` to 1 says Claude. _Runs longer but will use full 30GB so not OOM issue/memory starving. 
+	- [x] *can try 3 for starters?* ; 3 cores works fine!
 - Notes from Claude AI: **Suggested order:**
 	1. `numCores=1` with your current `yield_size` — quick test, no code changes needed elsewhere.
 	2. If still OOM, then try `yield_size=1e3` (know that runtime overhead compounds fast at this level — each chunk has fixed overhead, so 1e3 chunk size could mean 100x more chunks than 1e5).
@@ -42,6 +42,7 @@ _each ## entry has a (x) metric to call out status for glancing the status_
 - #O : to do something
 
 ## temp : job ids
+- 33216081
 
 ## Estimate scaling 
 - File sizes: not a good predictor ; _need length and depth too!_
@@ -63,26 +64,35 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
-# 1/Oct/26+ : v2
+# 1-2/Oct/26+ : v2
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
-## changes Ns
+## changes for Ns
 - [ ] explore the masking with small letters in wt sequence
 	> **_--wildtypeSequence_** Wild-type nucleotide sequence (A/C/G/T). Lower-case bases (a/c/g/t) indicate internal constant regions to be removed (required if '_--runDemo_'=F)
 - ignore cutadapt trimming? ; *might mess up length distribution if not equal?*
 
-## Changes 3R5
+## Changes for 3R5
 - [ ] don't trim / remove the `--cutadapt5Second` sequence; _since read is shorter than amplicon.
 	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
+---
+## NNN_lokya - v2.0.1
+- [ ] explore the masking with small letters in wt sequence for NNN_lokya. 
+	- [ ] Update  log with small caps except the NNN: 
+```sh
+sbatch slurm_dimsum.sh theoAptzNNN_lokya
+```
 
-## 3R5 - v2.0.1
-- [ ] Test out if the cutadapt without the `3First` / `3Second` options works. 
-	- *is unlikely looking at the cutadapt logs of 4NCM.*
-	- Need less RAM, lets do more cores to try. with start and stop stages
+## (S debugged, prove #o) 3R5  - v2.0.1
+- [x] (*doesn't change anything*) Test out if the cutadapt without the `3First` / `3Second` options works. (33216081)
+	- *is unlikely looking at the cutadapt logs of 4NCM.* / 
+	- **Result**: Found ==primer dimers==, so cutadapt was doing the right thing by deleting these reads!
+	- Logistics: Need less RAM, lets do more cores to try. with start and stop stages
 ```sh
 sbatch --mem=40G --cpus-per-task=12 --time=2:00:00 slurm_dimsum.sh 3R5library_madison -- --startStage 1 --stopStage 2 --numCores 8
 ```
+- [ ] To prove this primer dimer thing, let's run a custom `.sh` with fastqc for length distribution before and after cutadapt-special with `--novoseq-trim=20` without trimming primers
 
 
 # 18/Sep/26: v1.2_low numCores, keep intermediate files 

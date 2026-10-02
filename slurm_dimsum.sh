@@ -4,9 +4,9 @@
 #SBATCH --job-name=dimsum
 #SBATCH --output=logs_slurm/%j.out
 #SBATCH --error=logs_slurm/%j.err
-#SBATCH --time=6:00:00          
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=30G
+#SBATCH --time=2:00:00          
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=40G
 #SBATCH --qos=cpu-normal
 #SBATCH -p acpu
 
