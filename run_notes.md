@@ -80,20 +80,28 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
 ## NNN_lokya - v2.0.1
-- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501)
-	- [x] Update log with small caps except the NNN. *see if primers in small caps is an issue!?* 
+- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ; 33329009 = rerun with startStage 4)
+	- [x] Update log with small caps except the NNN. 
+		- [x] (Yes, primers need to be capital!) *see if primers in small caps is an issue!?* ; Causes error that is misleading: `Error: Invalid constant region sequences. Only valid nucleotide sequences allowed (A/C/T/G).` 
 	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
 	- [x] Update the filter to remove singletons in input (*assumed spurious?*)
 	- result: last run had : 97265 rows ; current run: 
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 ```
+With masking rerun:
+```sh
+sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --no-capitalize-WT --startStage=4
+```
+
+==scratch==
 
 ## (S debugged, prove #o) 3R5  - v2.0.1
 - [x] (*doesn't change anything*) Test out if the cutadapt without the `3First` / `3Second` options works. (33216081)
 	- *is unlikely looking at the cutadapt logs of 4NCM.* / 
 	- **Result**: Found ==primer dimers==, so cutadapt was doing the right thing by deleting these reads!
 	- Logistics: Need less RAM, lets do more cores to try. with start and stop stages
+		- Note: Need to run only stage dimsum to avoid copying a mix of old and new data over with rclone. `--section dimsum` before the `-- --dimsum options`
 ```sh
 sbatch --mem=40G --cpus-per-task=12 --time=2:00:00 slurm_dimsum.sh 3R5library_madison -- --startStage 1 --stopStage 2 --numCores 8
 ```

@@ -2,11 +2,11 @@
 
 # runs dimsum on HPC. (activate using SLURM with the slurm_dimsum.sh script)
 # Run this within the DiMSum directory and the mamba environment.
-# Usage: ./run_dimsum.sh [--environment local|hpc] [--capitalize|--no-capitalize] [run_name] [dimsum_option ...]
+# Usage: ./run_dimsum.sh [--environment local|hpc] [--capitalize-WT|--no-capitalize-WT] [run_name] [dimsum_option ...]
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
 environment="local"
-capitalize=true
+capitalize_WT=true
 if [[ "${1:-}" == "--environment" ]]; then
     if [[ $# -lt 2 ]]; then
         echo "--environment requires local or hpc" >&2
@@ -16,11 +16,12 @@ if [[ "${1:-}" == "--environment" ]]; then
     shift 2
 fi
 
-if [[ "${1:-}" == "--no-capitalize" ]]; then
-    capitalize=false
+# capture the WT capitalization flag before the run_name argument.
+if [[ "${1:-}" == "--no-capitalize-WT" ]]; then
+    capitalize_WT=false
     shift
-elif [[ "${1:-}" == "--capitalize" ]]; then
-    capitalize=true
+elif [[ "${1:-}" == "--capitalize-WT" ]]; then
+    capitalize_WT=true
     shift
 fi
 
@@ -30,11 +31,12 @@ if [[ $# -gt 0 && "$1" != --* ]]; then
     shift
 fi
 
-if [[ "${1:-}" == "--no-capitalize" ]]; then
-    capitalize=false
+# capture the WT capitalization flag after the run_name argument.
+if [[ "${1:-}" == "--no-capitalize-WT" ]]; then
+    capitalize_WT=false
     shift
-elif [[ "${1:-}" == "--capitalize" ]]; then
-    capitalize=true
+elif [[ "${1:-}" == "--capitalize-WT" ]]; then
+    capitalize_WT=true
     shift
 fi
 
@@ -82,12 +84,13 @@ fi
 # The parameter file contains the shell variables used below; need to source it
 source "$params_file"
 
-# Convert the wildtype sequence and cutadapt sequences to uppercase by default.
-if [[ "$capitalize" == true ]]; then
+# Convert the wildtype sequence to uppercase by default; disable with a switch to excise constant regions
+if [[ "$capitalize_WT" == true ]]; then
     wildtype_sequence=$(printf '%s' "$wildtype_sequence" | tr '[:lower:]' '[:upper:]')
-    cutadapt_5_first=$(printf '%s' "$cutadapt_5_first" | tr '[:lower:]' '[:upper:]')
-    cutadapt_5_second=$(printf '%s' "$cutadapt_5_second" | tr '[:lower:]' '[:upper:]')
 fi
+
+cutadapt_5_first=$(printf '%s' "$cutadapt_5_first" | tr '[:lower:]' '[:upper:]')
+cutadapt_5_second=$(printf '%s' "$cutadapt_5_second" | tr '[:lower:]' '[:upper:]')
 
 mkdir -p "$output_dir"
 
@@ -105,5 +108,4 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --retainIntermediateFiles=T \
     --fitnessMinInputCountAll=2 \
     "${dimsum_args[@]}"
-
 
