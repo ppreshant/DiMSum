@@ -2,10 +2,11 @@
 
 # runs dimsum on HPC. (activate using SLURM with the slurm_dimsum.sh script)
 # Run this within the DiMSum directory and the mamba environment.
-# Usage: ./run_dimsum.sh [--environment local|hpc] [run_name] [dimsum_option ...]
+# Usage: ./run_dimsum.sh [--environment local|hpc] [--capitalize|--no-capitalize] [run_name] [dimsum_option ...]
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
 environment="local"
+capitalize=true
 if [[ "${1:-}" == "--environment" ]]; then
     if [[ $# -lt 2 ]]; then
         echo "--environment requires local or hpc" >&2
@@ -15,11 +16,28 @@ if [[ "${1:-}" == "--environment" ]]; then
     shift 2
 fi
 
+if [[ "${1:-}" == "--no-capitalize" ]]; then
+    capitalize=false
+    shift
+elif [[ "${1:-}" == "--capitalize" ]]; then
+    capitalize=true
+    shift
+fi
+
 run_name="della_pilot_ez"
 if [[ $# -gt 0 && "$1" != --* ]]; then
     run_name="$1"
     shift
 fi
+
+if [[ "${1:-}" == "--no-capitalize" ]]; then
+    capitalize=false
+    shift
+elif [[ "${1:-}" == "--capitalize" ]]; then
+    capitalize=true
+    shift
+fi
+
 dimsum_args=("$@")
 
 # Select paths for local execution or HPC execution.
@@ -64,10 +82,12 @@ fi
 # The parameter file contains the shell variables used below; need to source it
 source "$params_file"
 
-# Convert the wildtype sequence and cutadapt sequences to uppercase to ensure consistency
-wildtype_sequence=$(printf '%s' "$wildtype_sequence" | tr '[:lower:]' '[:upper:]')
-cutadapt_5_first=$(printf '%s' "$cutadapt_5_first" | tr '[:lower:]' '[:upper:]')
-cutadapt_5_second=$(printf '%s' "$cutadapt_5_second" | tr '[:lower:]' '[:upper:]')
+# Convert the wildtype sequence and cutadapt sequences to uppercase by default.
+if [[ "$capitalize" == true ]]; then
+    wildtype_sequence=$(printf '%s' "$wildtype_sequence" | tr '[:lower:]' '[:upper:]')
+    cutadapt_5_first=$(printf '%s' "$cutadapt_5_first" | tr '[:lower:]' '[:upper:]')
+    cutadapt_5_second=$(printf '%s' "$cutadapt_5_second" | tr '[:lower:]' '[:upper:]')
+fi
 
 mkdir -p "$output_dir"
 

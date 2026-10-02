@@ -79,7 +79,8 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 ---
 ## NNN_lokya - v2.0.1
 - [ ] explore the masking with small letters in wt sequence for NNN_lokya. 
-	- [ ] Update  log with small caps except the NNN: 
+	- [ ] Update log with small caps except the NNN: 
+	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing. 
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 ```
