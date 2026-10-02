@@ -101,10 +101,9 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
-    # Running options for our ribozyme workflow
+    --numCores "$num_cores" \
     --stranded F --sequenceType "noncoding" \
     --maxSubstitutions 25 --indels 'all' \
-    --numCores "$num_cores" \
     --retainIntermediateFiles=T \
     --fitnessMinInputCountAll=2 \
     "${dimsum_args[@]}"

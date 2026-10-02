@@ -80,7 +80,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
 ## NNN_lokya - v2.0.1
-- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ; 33329009 = rerun with startStage 4)
+- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ; 33333226  = rerun with startStage 4)
 	- [x] Update log with small caps except the NNN. 
 		- [x] (Yes, primers need to be capital!) *see if primers in small caps is an issue!?* ; Causes error that is misleading: `Error: Invalid constant region sequences. Only valid nucleotide sequences allowed (A/C/T/G).` 
 	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
@@ -89,12 +89,12 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 ```
-With masking rerun:
+With masking rerun: (33333226)
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --no-capitalize-WT --startStage=4
 ```
-
-==scratch==
+- Intermediate runs with issues: 
+	- 33329551: 
 
 ## (S debugged, prove #o) 3R5  - v2.0.1
 - [x] (*doesn't change anything*) Test out if the cutadapt without the `3First` / `3Second` options works. (33216081)
