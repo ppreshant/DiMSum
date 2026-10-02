@@ -2,6 +2,8 @@
 # Params to make it work!
 (done on 17/Sep/26) 
 
+## Strict filtering/analysis/5
+- [x] `--fitnessMinInputCountAll=2` remove singletons to reduce spurious variants. *This may not affect the table we see which seems to be before the stage 5?*
 ## Permissive filtering
 - [x] `--indels 'all'` : retains indels otherwise discarded by default
 - [x] `--maxSubstitutions 25` : increase from the default of 2; arbitrary 25. 
@@ -78,9 +80,10 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
 ## NNN_lokya - v2.0.1
-- [ ] explore the masking with small letters in wt sequence for NNN_lokya. 
+- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501)
 	- [x] Update log with small caps except the NNN. *see if primers in small caps is an issue!?* 
-	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing. 
+	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
+	- [x] Update the filter to remove singletons in input (*assumed spurious?*)
 	- result: last run had : 97265 rows ; current run: 
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya

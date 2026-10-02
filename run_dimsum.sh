@@ -95,13 +95,15 @@ mkdir -p "$output_dir"
 DiMSum --fastqFileDir "$fastq_dir" \
     --experimentDesignPath "$experiment_design" \
     --wildtypeSequence "$wildtype_sequence" \
-    --stranded F --sequenceType "noncoding" \
-    --maxSubstitutions 25 --indels 'all' \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
+    # Running options for our ribozyme workflow
+    --stranded F --sequenceType "noncoding" \
+    --maxSubstitutions 25 --indels 'all' \
     --numCores "$num_cores" \
     --retainIntermediateFiles=T \
+    --fitnessMinInputCountAll=2 \
     "${dimsum_args[@]}"
 
 
