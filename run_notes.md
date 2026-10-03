@@ -80,7 +80,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
 ## NNN_lokya - v2.0.1
-- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ; 33333226  = rerun with startStage 4)
+- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ;  = rerun with startStage 4)
 	- [x] Update log with small caps except the NNN. 
 		- [x] (Yes, primers need to be capital!) *see if primers in small caps is an issue!?* ; Causes error that is misleading: `Error: Invalid constant region sequences. Only valid nucleotide sequences allowed (A/C/T/G).` 
 	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
@@ -89,14 +89,16 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 ```
-With masking rerun: (33333226)
+With masking rerun: 
 ```sh
-sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --no-capitalize-WT --startStage=4
+sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --no-capitalize-WT --numCores 8
 ```
 - Intermediate runs with issues: 
-	- 33329551: 
+	- 33329551: Interrupted dimsum call | 33333226: forgot to pull | 33333331 : something
+	- 33333251: start stage can't be 4
+	- 33334220: takes too long to start. but left it running
 
-## (S debugged, prove #o) 3R5  - v2.0.1
+## (S: debugged, proved) 3R5  - v2.0.1
 - [x] (*doesn't change anything*) Test out if the cutadapt without the `3First` / `3Second` options works. (33216081)
 	- *is unlikely looking at the cutadapt logs of 4NCM.* / 
 	- **Result**: Found ==primer dimers==, so cutadapt was doing the right thing by deleting these reads!
@@ -105,8 +107,11 @@ sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --no-capitalize-WT --startStage=4
 ```sh
 sbatch --mem=40G --cpus-per-task=12 --time=2:00:00 slurm_dimsum.sh 3R5library_madison -- --startStage 1 --stopStage 2 --numCores 8
 ```
-- [ ] To prove this primer dimer thing, let's run a custom `.sh` with fastqc for length distribution before and after cutadapt-special with `--novoseq-trim=20` without trimming primers
-
+- [x] To prove this primer dimer thing, let's run a custom `.sh` with fastqc for length distribution before and after cutadapt-special with `--novoseq-trim=20` without trimming primers
+	- Command to execute the cutadapt (*within an sinteractive; dimsum mamba env activated*)
+```sh
+cutadapt --nextseq-trim=20 -o .. data_staging/3R5library_madison/*S1*R1*
+```
 
 # 18/Sep/26: v1.2_low numCores, keep intermediate files 
 #v1
