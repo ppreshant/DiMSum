@@ -79,10 +79,32 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
+## 4NCMLibrary
+- [x] (S; v2) filter w permittedSequence, no indels
+	- Run tag: 33464284; has 65,534 variants
+```sh
+sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh 4NCMLibrary_madison -- --allow-only-caps-substitutions --indels 'none' --startStage 4
+```
+Distrubition of variant numbers by nham
+```R
+  Nham_nt count
+    <dbl> <int>
+1       0     1
+2       1    24
+3       2   252
+4       3  1512
+5       4  5670
+6       5 13606
+7       6 20411
+8       7 17496
+9       8  6561
+```
+
+
 ## NNN_lokya - v2.0+
-- [ ] (v2.2) does permittedSeq + no indels  
+- [x] (S; v2.2) does permittedSeq + no indels (33464122) ; *down to 4,090 variants now*
 	- default req high, not queing: (33463547) 
-	- reduce requirements: (33463688) | fix bug with surm options: 33464122)
+	- reduce requirements: (33463688) | fix bug with surm options: )
 ```sh
 sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --indels 'none' --startStage 4
 ```
@@ -100,7 +122,7 @@ sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --st
 	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
 	- [x] Update the filter to remove singletons in input (*assumed spurious?*)
 	- result: last run had : 97265 rows ; current run: 23785 ; *still quite higher than the expected 4 k*
-	- [ ] doing prelim analysis ipynb on this sheet ; 
+	- [x] doing prelim analysis ipynb on this sheet ; 
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 ```
@@ -112,6 +134,20 @@ sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --no-capitalize-WT --numCores 8
 	- 33329551: Interrupted dimsum call | 33333226: forgot to pull | 33333331 : something
 	- 33333251: start stage can't be 4
 	- 33334220: takes too long to start. but left it running
+- Distrubution of nham variant numbers
+```R
+  Nham_nt count
+    <dbl> <int>
+1       0     1
+2       1    18
+3       2   135
+4       3   540
+5       4  1215
+6       5  1455
+7       6   725
+8      NA 19695 # these appear spurious except 20
+```
+
 
 ## (S: debugged, proved) 3R5  - v2.0.1
 - [x] (*doesn't change anything*) Test out if the cutadapt without the `3First` / `3Second` options works. (33216081)
