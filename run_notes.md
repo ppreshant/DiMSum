@@ -79,13 +79,22 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
-## NNN_lokya - v2.0
-- [ ] Explore `--permittedSequences` instead of masking 
+## NNN_lokya - v2.0+
+- [ ] (v2.2) does permittedSeq + no indels  
+	- default req high, not queing: (33463547) 
+	- reduce requirements: (33463688) | fix bug with surm options: 33464122)
+```sh
+sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --indels 'none' --startStage 4
+```
+
+- [x] (v2.1) Explore `--permittedSequences` instead of masking (33445464)
+	- observed same ncols as v2.0 ; Turns out all the fluff were indels (19 / 23 k); 
+	- found 20 indels enriched significantly (> 1000 counts in 25 selection) -> saved for later analysis
+		- No; _maybe the permittedSeqs is applied after these interim results are written?_
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --startStage 4 --numCores 8
 ```
-
-- [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ;  = rerun with startStage 4)
+- [x] (v2.0) explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ;  = rerun with startStage 4)
 	- [x] Update log with small caps except the NNN. 
 		- [x] (Yes, primers need to be capital!) *see if primers in small caps is an issue!?* ; Causes error that is misleading: `Error: Invalid constant region sequences. Only valid nucleotide sequences allowed (A/C/T/G).` 
 	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
