@@ -66,7 +66,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
-# 1-2/Oct/26+ : v2
+# 1-2/Oct/26+ : v2.0
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
 ## changes for Ns
@@ -79,13 +79,19 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
-## NNN_lokya - v2.0.1
+## NNN_lokya - v2.0
+- [ ] Explore `--permittedSequences` instead of masking 
+```sh
+sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --startStage 4 --numCores 8
+```
+
 - [ ] explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ;  = rerun with startStage 4)
 	- [x] Update log with small caps except the NNN. 
 		- [x] (Yes, primers need to be capital!) *see if primers in small caps is an issue!?* ; Causes error that is misleading: `Error: Invalid constant region sequences. Only valid nucleotide sequences allowed (A/C/T/G).` 
 	- [x] The conversion to capitalization in the script -> add as an optional trigger and default to capitalizing.
 	- [x] Update the filter to remove singletons in input (*assumed spurious?*)
-	- result: last run had : 97265 rows ; current run: 
+	- result: last run had : 97265 rows ; current run: 23785 ; *still quite higher than the expected 4 k*
+	- [ ] doing prelim analysis ipynb on this sheet ; 
 ```sh
 sbatch slurm_dimsum.sh theoAptzNNN_lokya
 ```
@@ -208,5 +214,4 @@ squeue -j 32625752. Interrupted during `rclone` after 2 h
 - Run : 32622941.out
 - variant python run with partial failed rclone: 32624519.out
 - redo rclone copy: 32627078.out
-
 

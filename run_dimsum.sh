@@ -2,11 +2,11 @@
 
 # runs dimsum on HPC. (activate using SLURM with the slurm_dimsum.sh script)
 # Run this within the DiMSum directory and the mamba environment.
-# Usage: ./run_dimsum.sh [--environment local|hpc] [--capitalize-WT|--no-capitalize-WT] [run_name] [dimsum_option ...]
+# Usage: ./run_dimsum.sh [--environment local|hpc] [--allow-only-caps-substitutions] [run_name] [dimsum_option ...]
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
 environment="local"
-capitalize_WT=true
+allow_only_caps_substitutions=false
 if [[ "${1:-}" == "--environment" ]]; then
     if [[ $# -lt 2 ]]; then
         echo "--environment requires local or hpc" >&2
@@ -16,12 +16,9 @@ if [[ "${1:-}" == "--environment" ]]; then
     shift 2
 fi
 
-# capture the WT capitalization flag before the run_name argument.
-if [[ "${1:-}" == "--no-capitalize-WT" ]]; then
-    capitalize_WT=false
-    shift
-elif [[ "${1:-}" == "--capitalize-WT" ]]; then
-    capitalize_WT=true
+# capture the substitution restriction flag before the run_name argument.
+if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
+    allow_only_caps_substitutions=true
     shift
 fi
 
@@ -31,12 +28,9 @@ if [[ $# -gt 0 && "$1" != --* ]]; then
     shift
 fi
 
-# capture the WT capitalization flag after the run_name argument.
-if [[ "${1:-}" == "--no-capitalize-WT" ]]; then
-    capitalize_WT=false
-    shift
-elif [[ "${1:-}" == "--capitalize-WT" ]]; then
-    capitalize_WT=true
+# capture the substitution restriction flag after the run_name argument.
+if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
+    allow_only_caps_substitutions=true
     shift
 fi
 
@@ -84,11 +78,17 @@ fi
 # The parameter file contains the shell variables used below; need to source it
 source "$params_file"
 
-# Convert the wildtype sequence to uppercase by default; disable with a switch to excise constant regions
-if [[ "$capitalize_WT" == true ]]; then
-    wildtype_sequence=$(printf '%s' "$wildtype_sequence" | tr '[:lower:]' '[:upper:]')
+# Extract the permitted substitution codes before capitalizing the WT sequence,
+# since lowercase positions identify fixed bases in the original sequence.
+# Convert the capitalization of WT into Ns for permitted substitutions, 
+#   and convert lowercase to uppercase to make them consistent.
+permitted_sequences_args=()
+if [[ "$allow_only_caps_substitutions" == true ]]; then
+    permitted_substitutions=$(printf '%s' "$wildtype_sequence" | sed -E 's/[A-Z]/N/g; y/atgc/ATGC/')
+    permitted_sequences_args=(--permittedSequences "$permitted_substitutions")
 fi
 
+wildtype_sequence=$(printf '%s' "$wildtype_sequence" | tr '[:lower:]' '[:upper:]')
 cutadapt_5_first=$(printf '%s' "$cutadapt_5_first" | tr '[:lower:]' '[:upper:]')
 cutadapt_5_second=$(printf '%s' "$cutadapt_5_second" | tr '[:lower:]' '[:upper:]')
 
@@ -98,6 +98,7 @@ mkdir -p "$output_dir"
 DiMSum --fastqFileDir "$fastq_dir" \
     --experimentDesignPath "$experiment_design" \
     --wildtypeSequence "$wildtype_sequence" \
+    "${permitted_sequences_args[@]}" \
     --cutadapt5First "$cutadapt_5_first" \
     --cutadapt5Second "$cutadapt_5_second" \
     -o "$output_dir" \
@@ -107,4 +108,3 @@ DiMSum --fastqFileDir "$fastq_dir" \
     --retainIntermediateFiles=T \
     --fitnessMinInputCountAll=2 \
     "${dimsum_args[@]}"
-
