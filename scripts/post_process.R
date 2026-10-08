@@ -5,8 +5,11 @@
 # Goals:
 # 1. filter: Threshold >=2 counts in "Input" col;
 # 2. Calculation: enrichment and leak scores;
-# 3. Zeros in enriched counts columns into a separate file;
-# 4. Madison: separate dataets for each temperature
+# 3. Split: (?) Zeros in enriched counts columns into a separate file;
+# 3b.            Madison: separate datasets for each temperature;
+
+# Usage: Rscript post_process.R <path_to_input_file>
+# Output: processed_data_full.csv, processed_concise.csv, post_processing.log (in the same dir as the input file)
 
 # import libraries -------------
 library(tidyverse)
@@ -35,28 +38,33 @@ data <- read_tsv(file_path)
 # Detecting key columns ------------------
 
 ## Regex patterns ---------------------
-# Detect the counts columns for calculations: input, enrichment, leak
+# Detect the columns for calculations: input, enrichment, leak
 input_signature <- "Input"
 enrich_signature <- "(neg25uM5fDUTheo|UraHisTheo)"
 leak_signature <- "(NoTheo|UraTheo)"
 
+type_suffix <- ".*_freq"
+
 temp_signature <- "30|24|35"
 
-count_suffixes <- ".*_count"
-
-
 # print the columns matching the regex patterns
-input_col <- grep(str_c(input_signature, count_suffixes),
-    colnames(data), value = TRUE)
+input_col <- grep(str_c(input_signature, type_suffix),
+                  colnames(data), value = TRUE)
 
-enrich_col <- grep(str_c(enrich_signature, count_suffixes),
-    colnames(data), value = TRUE)
+enrich_col <- grep(str_c(enrich_signature, type_suffix),
+                   colnames(data), value = TRUE)
 
-leak_col <- grep(str_c(leak_signature, count_suffixes),
+leak_col <- grep(str_c(leak_signature, type_suffix),
                  colnames(data), value = TRUE)
+
+# get input counts column name
+input_counts_col <-
+  grep(str_c(input_signature, ".*_count"),
+       colnames(data), value = TRUE)
 
 cat("column name matches\n")
 list(
+  "input_counts" = input_counts_col,
   "input" = input_col,
   "enrichment" = enrich_col,
   "leak" = leak_col
@@ -67,9 +75,12 @@ list(
 ## Error check -------
 
 # throw an error if a single column is not found
-if (any(lengths(list(input_col, enrich_col, leak_col)) != 1)) {
+if (any(lengths(list(input_counts_col, input_col, enrich_col, leak_col)) != 1)) {
   # give error as to which column was problematic and what it was
   # use a vectorized command or function to minimize repetition
+  if (length(input_counts_col) != 1) {
+    cat("Input counts column found: ", input_counts_col, "\n")
+  }
   if (length(input_col) != 1) {
     cat("Input column found: ", input_col, "\n")
   }
@@ -79,7 +90,7 @@ if (any(lengths(list(input_col, enrich_col, leak_col)) != 1)) {
   if (length(leak_col) != 1) {
     cat("Leak column found: ", leak_col, "\n")
   }
-  stop("Error: Column not found or multiple columns found")
+  stop("Error: Required column not found or multiple columns found. Check log for details.")
 }
 
 # processing -----
@@ -87,8 +98,8 @@ if (any(lengths(list(input_col, enrich_col, leak_col)) != 1)) {
 # Threshold filter: for ease of calculations (denominator can't be zero)
 # keep only rows where "Input" col >= 2 (filter out spurious zero/singletons)
 filtered_data <- data |>
-  filter(.data[[input_col]] >= 2) |> # remove rows with Input count < 2
-  select(-ends_with(c("_percent", "_freq"))) # (x) percentage and frequency
+  filter(.data[[input_counts_col]] >= 2) |> # remove rows with Input count < 2
+  select(-ends_with(c("_percent"))) # (x) percentage
 
 # split the data into SNVs and indels and
 # filter the indels more stringently for > 50 in Input count or enriched counts
@@ -124,7 +135,7 @@ processed_data <- filtered_indels_stringent %>%
   ) |> 
 
   # place Nham = 0 first, then arrange by enrichment score descending
-  arrange(desc(Nham_nt == 0), desc(enrichment_score)) |>
+  arrange(desc(Nham_nt == 0), desc(enrichment_score))
   
 
 # Retain only key columns for Dylan's analysis
@@ -135,6 +146,10 @@ processed_concise <- processed_data |>
 cat("\n\nFirst few rows of the processed concise data:\n")
 head(processed_concise) |> print()
 
-# write the processed datasets in the same dir as the input file 
-write.csv(processed_data, file = file.path(dirname(input_file), "processed_data_full.csv"), row.names = FALSE)
-write.csv(processed_concise, file = file.path(dirname(input_file), "processed_concise.csv"), row.names = FALSE)
+# write the processed datasets in the same dir as the input file
+write.csv(processed_data,
+          file = file.path(dirname(file_path), "processed_data.csv"),
+          row.names = FALSE)
+write.csv(processed_concise,
+          file = file.path(dirname(file_path), "variant_enrichment_data.csv"),
+          row.names = FALSE)

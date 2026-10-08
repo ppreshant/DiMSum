@@ -66,6 +66,15 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
+# 8/Oct/26 - post processing 
+- created a base script on the NNN 
+- Expanding it to 3 different temperatures for Madison's 4NCM
+
+for one category of data, we have same enriched and leak columns at the 3 different temperatures. Need to split the data into 3 groups to calculate the stuff and output in 3 different sheets. 
+
+Here's the format: 
+("theoAptzNNN_lokya/variant_data_parsed.tsv")
+
 # 1-2/Oct/26+ : v2.0
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
