@@ -135,7 +135,8 @@ processed_data <- filtered_indels_stringent %>%
   ) |> 
 
   # place Nham = 0 first, then arrange by enrichment score descending
-  arrange(desc(Nham_nt == 0), desc(enrichment_score))
+  arrange(as_factor(Nham_nt == 0) |> fct_na_value_to_level("FALSE") |> desc(),
+          desc(enrichment_score))
   
 
 # Retain only key columns for Dylan's analysis
