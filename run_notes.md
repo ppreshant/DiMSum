@@ -69,21 +69,28 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 1-2/Oct/26+ : v2.0
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
-## changes for Ns
-- [ ] explore the masking with small letters in wt sequence
+## changes 
+**for Ns**
+- [x] (*moved to `permittedSequence` instead*) explore the masking with small letters in wt sequence
 	> **_--wildtypeSequence_** Wild-type nucleotide sequence (A/C/G/T). Lower-case bases (a/c/g/t) indicate internal constant regions to be removed (required if '_--runDemo_'=F)
 - ignore cutadapt trimming? ; *might mess up length distribution if not equal?*
 
-## Changes for 3R5
-- [ ] don't trim / remove the `--cutadapt5Second` sequence; _since read is shorter than amplicon.
+**for 3R5
+- [x] (*didn't change much; primer dimer issue*) don't trim / remove the `--cutadapt5Second` sequence; _since read is shorter than amplicon.
 	- currently `-a`'s 3' end is `required`(from the cutadapt logs); need to force the use of  `-g` instead by feeding in the linked format with optional coded in.
 - (*no, this is confusing param but 3 is conservative*) `--cutadaptOverlap` should be more than 3?
 ---
 ## 4NCMLibrary
-- [x] (S; v2) filter w permittedSequence, no indels
-	- Run tag: 33464284; has 65,534 variants
+- [ ] Should we relook at including a few indels? _Come back after looking at NNN_lokya data_
+	- [ ] (v2.2) Rerun with indels w permitted seq : (33507762)
 ```sh
 sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh 4NCMLibrary_madison -- --allow-only-caps-substitutions --indels 'none' --startStage 4
+```
+
+- [x] (S; v2.0) filter w permittedSequence, no indels
+	- Run tag: 33464284; has 65,534 variants
+```sh
+sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh 4NCMLibrary_madison -- --allow-only-caps-substitutions --startStage 4
 ```
 Distrubition of variant numbers by nham
 ```R
@@ -113,8 +120,11 @@ sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh theoAptzNNN_lok
 	- observed same ncols as v2.0 ; Turns out all the fluff were indels (19 / 23 k); 
 	- found 20 indels enriched significantly (> 1000 counts in 25 selection) -> saved for later analysis
 		- No; _maybe the permittedSeqs is applied after these interim results are written?_
+	- [x] Do some exploratory analysis and plotting to select interesting indels to keep.
+		- Select >= 50 in any column (interesting indels only) gives total of 4,671 variants (620 of them indels and 4k expected SNPs)
+	- Rerun v2.1 again; *keep the final file on scratch with indels ; simplifies future deployment* (33544524)
 ```sh
-sbatch slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --startStage 4 --numCores 8
+sbatch --mem=5G --cpus-per-task=4 --time=0:20:00 slurm_dimsum.sh theoAptzNNN_lokya -- --allow-only-caps-substitutions --startStage 4
 ```
 - [x] (v2.0) explore the masking with small letters in wt sequence for NNN_lokya. (33324501 ;  = rerun with startStage 4)
 	- [x] Update log with small caps except the NNN. 
