@@ -10,9 +10,10 @@ set -eu
 ## key variables ----------------------------------
 scratch_dir="/scratch/alpine/$USER"
 results_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results"
+enrichment_data_dir="${results_dir}/enrichment_data"
 
-search_dir=${1:-results_dir}
-output_dir=${2:-enrichment_data}
+search_dir=${1:-"$results_dir"}
+output_dir=${2:-"$enrichment_data_dir"}
 
 if [ ! -d "$search_dir" ]; then
     echo "Search directory not found: $search_dir" >&2
