@@ -85,13 +85,34 @@ temperatures_detected <-
   str_replace("_$", "C") |>
   unique()
 
-# create a table of detected temperatures and their enriched and leak columns
-temp_table <- tibble(
+enrichment_table <- tibble(
   temperature = str_extract(enrich_col, temp_signature) |>
     str_replace("_$", "C"),
-  enrichment = enrich_col,
+  enrichment = enrich_col
+)
+
+leak_table <- tibble(
+  temperature = str_extract(leak_col, temp_signature) |>
+    str_replace("_$", "C"),
   leak = leak_col
 )
+
+# Match enrichment and leak columns by temperature rather than column order.
+if (length(temp_cols) > 0) {
+  if (anyNA(enrichment_table$temperature) ||
+      anyNA(leak_table$temperature) ||
+      anyDuplicated(enrichment_table$temperature) ||
+      anyDuplicated(leak_table$temperature) ||
+      !setequal(enrichment_table$temperature, leak_table$temperature)) {
+    stop(
+      "Temperature labels for enrichment and leak columns do not match. ",
+      "Check the detected column names."
+    )
+  }
+}
+
+temp_table <- enrichment_table |>
+  left_join(leak_table, by = "temperature")
 
 if (length(temp_cols) > 0) {
   cat("\n\nTable of detected temperatures and their columns:\n")
