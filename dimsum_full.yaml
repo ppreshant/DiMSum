@@ -6,3 +6,4 @@ dependencies:
   - r-base=4.0
   - fastqc=0.11
   - r-dimsum
+  - r-tidyverse # added for post_process.R (PK)
