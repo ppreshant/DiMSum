@@ -46,7 +46,8 @@ if [[ ! -f "$post_process_script" ]]; then
 fi
 
 module load miniforge
-mamba activate dimsum
+mamba activate tidyverse 
+# make sure to load a clean environment for latest R and tidyverse.
 
 job_start=$(date +%s)
 processed_count=0
