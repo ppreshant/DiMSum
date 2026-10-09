@@ -10,9 +10,14 @@
 #SBATCH --qos=cpu-normal
 #SBATCH -p acpu
 
-set -euo pipefail
+# direct the temp files to prevent unnecessary storage (SLURM_SCRATCH is a local scratch directory on the node)
+export TMPDIR="${SLURM_SCRATCH}/.tmp"
+mkdir -p "$TMPDIR"
+
 
 source ~/.bashrc
+
+set -euo pipefail
 
 if [[ $# -gt 1 ]]; then
     echo "Usage: sbatch post_process_slurm.sh [run_name]" >&2
