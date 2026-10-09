@@ -42,6 +42,8 @@ mamba activate dimsum
 job_start=$(date +%s)
 processed_count=0
 failed_count=0
+declare -a run_names=()
+declare -A seen_runs=()
 
 echo "Job started: $(date --iso-8601=seconds)"
 
@@ -65,6 +67,12 @@ while IFS= read -r -d '' input_file; do
     echo "Post-processing: $input_file"
     if Rscript --vanilla "$post_process_script" "$input_file"; then
         ((processed_count += 1))
+        relative_input="${input_file#"$results_dir"/}"
+        input_run_name="${relative_input%%/*}"
+        if [[ -z "${seen_runs[$input_run_name]+x}" ]]; then
+            run_names+=("$input_run_name")
+            seen_runs["$input_run_name"]=1
+        fi
         echo "Finished: $input_file"
     else
         ((failed_count += 1))
@@ -84,3 +92,28 @@ echo "Elapsed: $(( ($(date +%s) - job_start) / 60 )) minutes"
 if [[ "$failed_count" -gt 0 ]]; then
     exit 1
 fi
+
+## COPY RESULTS SECTION ----------------------------
+
+module load rclone
+
+for run_name in "${run_names[@]}"; do
+    output_dir="${results_dir}/${run_name}"
+    remote="onedrive_csu:Databases/Novogene NGS sequencing/pk_analysis_temp/${run_name}"
+
+    rclone mkdir "$remote"
+
+    echo
+    echo "Copying results to sharepoint: $remote"
+    stage_start=$(date +%s)
+    rclone copy "$output_dir" "$remote" \
+        --include 'processed_data*.csv' \
+        --include 'variant_enrichment_data*.csv' \
+        --include 'post_processing.log' \
+        --ignore-checksum --ignore-size \
+        --verbose --stats-one-line \
+        --transfers=4 --checkers=8
+    echo "rclone finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
+done
+
+echo "Job finished: $(date --iso-8601=seconds) (total elapsed: $(( ($(date +%s) - job_start) / 60 )) minutes)"

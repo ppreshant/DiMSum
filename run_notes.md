@@ -69,6 +69,11 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 8/Oct/26 - post processing 
 - created a base script on the NNN 
 - Expanding it to 3 different temperatures for Madison's 4NCM
+- [ ] Test the post processing slurm script on Lokya epPCR (33634156)
+```sh
+sbatch post_process_slurm.sh theoAptzepPCR_lokya
+```
+
 
 for one category of data, we have same enriched and leak columns at the 3 different temperatures. Need to split the data into 3 groups to calculate the stuff and output in 3 different sheets. 
 
