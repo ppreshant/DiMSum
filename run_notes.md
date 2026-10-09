@@ -85,7 +85,7 @@ Here's the format:
 # 1-2/Oct/26+ : v2.0
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 
 
-## changes 
+## changes : Ns only permitted
 **for Ns**
 - [x] (*moved to `permittedSequence` instead*) explore the masking with small letters in wt sequence
 	> **_--wildtypeSequence_** Wild-type nucleotide sequence (A/C/G/T). Lower-case bases (a/c/g/t) indicate internal constant regions to be removed (required if '_--runDemo_'=F)

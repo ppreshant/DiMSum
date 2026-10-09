@@ -48,7 +48,7 @@ leak_signature <- "(NoTheo|UraTheo)"
 
 type_suffix <- ".*_freq"
 
-temp_signature <- "[0-9]{2}C" # madison's 30C|24C|35C
+temp_signature <- "(?<=Theo)[0-9]{2}(C|_)" # supports 35C and 30_ after Theo
 
 # print the columns matching the regex patterns
 input_col <- grep(str_c(input_signature, type_suffix),
@@ -79,12 +79,16 @@ detected_columns <-
 # Temperature processing (Madison data) ----------------
 
 # look for temperature signatures in the column names
-temp_cols <- grep(temp_signature, colnames(data), value = TRUE)
-temperatures_detected <- str_extract(temp_cols, temp_signature) |> unique()
+temp_cols <- grep(temp_signature, colnames(data), value = TRUE, perl = TRUE)
+temperatures_detected <-
+  str_extract(temp_cols, temp_signature) |>
+  str_replace("_$", "C") |>
+  unique()
 
 # create a table of detected temperatures and their enriched and leak columns
 temp_table <- tibble(
-  temperature = str_extract(enrich_col, temp_signature),
+  temperature = str_extract(enrich_col, temp_signature) |>
+    str_replace("_$", "C"),
   enrichment = enrich_col,
   leak = leak_col
 )
