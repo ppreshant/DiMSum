@@ -44,11 +44,17 @@ multiple_temp_mode <- FALSE # default to single temperature mode
 # Detect the columns for calculations: input, enrichment, leak
 input_signature <- "Input"
 enrich_signature <- "(neg25uM5fDUTheo|UraHisTheo)"
-leak_signature <- "(NoTheo|UraTheo)"
+leak_signature <- "(NoTheo|UraHisVeh)"
+theo_effect_signature <- "UraTheo"
 
 type_suffix <- ".*_freq"
 
-temp_signature <- "(?<=Theo)[0-9]{2}(C|_)" # supports 35C and 30_ after Theo
+temp_signature <- "(Theo|Veh)[0-9]{2}(C|_)"
+extract_temperature <- function(columns) {
+  str_extract(columns, temp_signature) |>
+    str_extract("[0-9]{2}(C|_)") |>
+    str_replace("_$", "C")
+}
 
 # print the columns matching the regex patterns
 input_col <- grep(str_c(input_signature, type_suffix),
@@ -57,8 +63,17 @@ input_col <- grep(str_c(input_signature, type_suffix),
 enrich_col <- grep(str_c(enrich_signature, type_suffix),
                    colnames(data), value = TRUE)
 
-leak_col <- grep(str_c(leak_signature, type_suffix),
-                 colnames(data), value = TRUE)
+leak_col <- grep(
+  str_c(leak_signature, type_suffix),
+  colnames(data),
+  value = TRUE
+)
+
+theo_effect_col <- grep(
+  str_c(theo_effect_signature, type_suffix),
+  colnames(data),
+  value = TRUE
+)
 
 # get input counts column name
 input_counts_col <-
@@ -79,71 +94,92 @@ detected_columns <-
 # Temperature processing (Madison data) ----------------
 
 # look for temperature signatures in the column names
-temp_cols <- grep(temp_signature, colnames(data), value = TRUE, perl = TRUE)
-temperatures_detected <-
-  str_extract(temp_cols, temp_signature) |>
-  str_replace("_$", "C") |>
-  unique()
+temp_cols <- grep(temp_signature, colnames(data), value = TRUE)
+temperatures_detected <- extract_temperature(temp_cols) |> unique()
 
 enrichment_table <- tibble(
-  temperature = str_extract(enrich_col, temp_signature) |>
-    str_replace("_$", "C"),
+  temperature = extract_temperature(enrich_col),
   enrichment = enrich_col
 )
 
 leak_table <- tibble(
-  temperature = str_extract(leak_col, temp_signature) |>
-    str_replace("_$", "C"),
+  temperature = extract_temperature(leak_col),
   leak = leak_col
 )
 
-# Match enrichment and leak columns by temperature rather than column order.
-if (length(temp_cols) > 0) {
-  if (anyNA(enrichment_table$temperature) ||
-      anyNA(leak_table$temperature) ||
-      anyDuplicated(enrichment_table$temperature) ||
-      anyDuplicated(leak_table$temperature) ||
-      !setequal(enrichment_table$temperature, leak_table$temperature)) {
-    stop(
-      "Temperature labels for enrichment and leak columns do not match. ",
-      "Check the detected column names."
-    )
-  }
-}
+theo_effect_table <- tibble(
+  temperature = extract_temperature(theo_effect_col),
+  theo_effect = theo_effect_col
+)
 
 temp_table <- enrichment_table |>
-  left_join(leak_table, by = "temperature")
+  left_join(leak_table, by = "temperature") |>
+  left_join(theo_effect_table, by = "temperature")
 
+
+## Error checks -------
+
+# Temperature to key columns mapping table
 if (length(temp_cols) > 0) {
   cat("\n\nTable of detected temperatures and their columns:\n")
   print(temp_table)
+
+  if (anyNA(temp_table$temperature) ||
+      anyDuplicated(temp_table$temperature)) {
+    stop(
+      "Enrichment columns must have one unique temperature each. ",
+      "Check the detected column names."
+    )
+  }
+
+  if (any(!is.na(temp_table$leak) &
+          !temp_table$temperature %in% extract_temperature(leak_col))) {
+    stop(
+      "Leak columns contain temperatures without matching enrichment columns. ",
+      "Check the detected column names."
+    )
+  }
+
+  if (any(!is.na(temp_table$theo_effect) &
+          !temp_table$temperature %in% extract_temperature(theo_effect_col))) {
+    stop(
+      "Theo-effect columns contain temperatures without matching enrichment columns. ",
+      "Check the detected column names."
+    )
+  }
+
+  missing_leak <- is.na(temp_table$leak)
+  if (any(missing_leak)) {
+    warning(
+      "No leak column found for: ",
+      paste(temp_table$temperature[missing_leak], collapse = ", "),
+      ". Leak scores will be omitted for those temperatures."
+    )
+  }
+
 }
 
-## Error check -------
 
-# Check/error if a single column is not found OR note: multi-temperature mode
-if (any(lengths(detected_columns) != 1)) {
+# Required columns must be unambiguous; leak and Theo-effect may be
+# absent for individual temperatures.
+if (length(input_counts_col) != 1 ||
+    length(input_col) != 1 ||
+    length(enrich_col) == 0) {
+  stop(
+    "Input, input-count, and enrichment columns must be present and unambiguous.",
+    " Check the detected columns."
+  )
+}
 
-  # if ncol enrich, leak and temp are equal, cat message that data will be split
-  if (length(enrich_col) == length(leak_col) &&
-        length(leak_col) == length(temperatures_detected) &&
-        length(temperatures_detected) > 1) {
-    cat("\n\nData will be split by temperatures for calculations and output: ",
-        paste(temperatures_detected, collapse = ", "), "\n")
-    multiple_temp_mode <- TRUE
-
-  } else {
-    # give error as to which column was problematic and what it was
-    cat("warning: Required columns missing or multiple matches found.\n")
-    for (col_name in names(detected_columns)) {
-      if (length(detected_columns[[col_name]]) != 1) {
-        cat("Column found: ", detected_columns[[col_name]], "\n")
-      }
-    }
-
-    stop("Error: Required column not found or multiple columns found.
-         Check log for details.")
-  }
+if (length(temp_cols) > 0) {
+  multiple_temp_mode <- length(enrich_col) > 1
+  cat("\n\nData will be split by temperatures for calculations and output: ",
+      paste(temperatures_detected, collapse = ", "), "\n")
+} else if (length(leak_col) != 1 || length(enrich_col) != 1) {
+  stop(
+    "Single-temperature input requires exactly one enrichment and leak column.",
+    " Check the detected columns."
+  )
 }
 
 # No temperature signatures: default mode (Lokya data)
@@ -151,7 +187,8 @@ if (!multiple_temp_mode) {
   temp_table <- tibble(
     temperature = NA_character_,
     enrichment = enrich_col,
-    leak = leak_col
+    leak = leak_col,
+    theo_effect = NA_character_
   )
 }
 
@@ -194,29 +231,38 @@ cat("\n\nFiltering complete. Calculating enrichment and leak scores.\n")
 
 ## calculation and output ------------------------
 
-# Calculate all enrichment and leak scores in one pass over the paired columns.
-score_columns <- pmap_dfc(
-  temp_table,
-  function(temperature, enrichment, leak) {
-    suffix <- if (is.na(temperature)) "" else paste0("_", temperature)
-    tibble(
-      !!paste0("enrichment_score", suffix) :=
-        filtered_indels_stringent[[enrichment]] /
-        filtered_indels_stringent[[input_col]],
-      !!paste0("leak_score", suffix) :=
-        filtered_indels_stringent[[leak]] /
-        filtered_indels_stringent[[input_col]]
-    )
+column_scorer <- function(numerator, score_name, suffix) {
+  if (is.na(numerator) || !numerator %in% names(filtered_indels_stringent)) {
+    return(NULL)
   }
-)
 
-processed_data <- bind_cols(filtered_indels_stringent, score_columns) |>
+  score <- filtered_indels_stringent[[numerator]] /
+    filtered_indels_stringent[[input_col]]
+
+  tibble(!!paste0(score_name, suffix) := score)
+}
+
+scored_columns <- map(seq_len(nrow(temp_table)), function(row) {
+  temperature <- temp_table$temperature[[row]]
+  suffix <- if (is.na(temperature)) "" else paste0("_", temperature)
+
+  list(
+    column_scorer(temp_table$enrichment[[row]], "enrichment_score", suffix),
+    column_scorer(temp_table$leak[[row]], "leak_score", suffix),
+    column_scorer(temp_table$theo_effect[[row]], "theo_effect_score", suffix)
+  ) |>
+    compact() |>
+    list_cbind()
+}) |>
+  list_cbind()
+
+processed_data <- bind_cols(filtered_indels_stringent, scored_columns) |>
   # place Nham = 0 first, then arrange by the first enrichment score descending
   arrange(
     as_factor(Nham_nt == 0) |>
       fct_na_value_to_level("FALSE") |>
       desc(),
-    desc(.data[[names(score_columns)[[1]]]])
+    desc(.data[[names(scored_columns)[[1]]]])
   )
 
 write.csv(
@@ -230,18 +276,21 @@ for (row in seq_len(nrow(temp_table))) {
   suffix <- if (is.na(temperature)) "" else paste0("_", temperature)
   enrichment_score_col <- paste0("enrichment_score", suffix)
   leak_score_col <- paste0("leak_score", suffix)
+  theo_effect_score_col <- paste0("theo_effect_score", suffix)
 
   processed_concise <- processed_data |>
     select(
       nt_seq,
-      all_of(enrichment_score_col),
-      all_of(leak_score_col),
+      any_of(enrichment_score_col),
+      any_of(leak_score_col),
+      any_of(theo_effect_score_col),
       Nham_nt,
       sequence_length
     ) |>
     rename(
-      enrichment_score = all_of(enrichment_score_col),
-      leak_score = all_of(leak_score_col)
+      enrichment_score = any_of(enrichment_score_col),
+      leak_score = any_of(leak_score_col),
+      theo_effect_score = any_of(theo_effect_score_col)
     ) |>
 
     # rearrange within each temp Nham = 0 first, then enrichment score desc
