@@ -14,6 +14,11 @@
 export TMPDIR="${SLURM_SCRATCH}/.tmp"
 mkdir -p "$TMPDIR"
 
+# ------------------end of slurm stuff --------------
+
+# Usage:
+#   sbatch post_process_slurm.sh [run_name]
+# Run all runs by default. If a run_name is provided, only that run will be processed.
 
 source ~/.bashrc
 
@@ -28,8 +33,7 @@ fi
 scratch_dir="/scratch/alpine/$USER"
 results_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results"
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-post_process_script="${script_dir}/scripts/post_process.R"
+post_process_script="./scripts/post_process.R"
 
 if [[ ! -d "$results_dir" ]]; then
     echo "Results directory not found: $results_dir" >&2
