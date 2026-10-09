@@ -75,12 +75,17 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 ```sh
 sbatch post_process_slurm.sh theoAptzepPCR_lokya
 ```
-- [ ] Run post process for all files: (33635088)
+- [ ] Run post process for all files: 
+```sh
+batch post_process_slurm.sh
+```
+- logs: failed for 3R5 and rclone: (33635088)
+	- revamped code with theo_effect etc. 9/Oct/26 (33650620)
 
-for one category of data, we have same enriched and leak columns at the 3 different temperatures. Need to split the data into 3 groups to calculate the stuff and output in 3 different sheets. 
-
-Here's the format: 
-("theoAptzNNN_lokya/variant_data_parsed.tsv")
+- [x] Prelim QC of the indels in 3R5 library (*haven't tested this on non NNN library; would expect SNPs to have equal amount of junk here*) 
+	> total rows in filtered data (stringent indel filtering): 70,895 
+	> - before filtering = 605,014 indels 
+	> - after filtering = 2,746 indels ; comparable to the nhams seens ~ 2k per nham
 
 # 1-2/Oct/26+ : v2.0
 #v2 : mask except NNNs, lenient cutadapt 3R5 etc. 

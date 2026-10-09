@@ -88,7 +88,12 @@ while IFS= read -r -d '' input_file; do
         ((failed_count += 1))
         echo "Failed: $input_file" >&2
     fi
-done < <(find "$search_dir" -type f -name "variant_data_parsed.tsv" -print0 | sort -z)
+done < <(
+    find "$search_dir" \
+        \( -type d \( -name "archive" -o -name "della_pilot_ez" \) -prune \) \
+        -o -type f -name "variant_data_parsed.tsv" -print0 |
+        sort -z
+)
 
 if [[ "$processed_count" -eq 0 && "$failed_count" -eq 0 ]]; then
     echo "No variant_data_parsed.tsv files found under: $search_dir" >&2
