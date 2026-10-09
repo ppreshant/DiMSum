@@ -99,31 +99,39 @@ echo
 echo "Post-processing complete: $processed_count succeeded, $failed_count failed"
 echo "Elapsed: $(( ($(date +%s) - job_start) / 60 )) minutes"
 
-if [[ "$failed_count" -gt 0 ]]; then
-    exit 1
-fi
-
 ## COPY RESULTS SECTION ----------------------------
 
+echo "Copying results to sharepoint..."
+
 module load rclone
+rclone_failed_count=0
 
 for run_name in "${run_names[@]}"; do
     output_dir="${results_dir}/${run_name}"
     remote="onedrive_csu:Databases/Novogene NGS sequencing/pk_analysis_temp/${run_name}"
 
-    rclone mkdir "$remote"
-
     echo
     echo "Copying results to sharepoint: $remote"
     stage_start=$(date +%s)
-    rclone copy "$output_dir" "$remote" \
-        --include 'processed_data*.csv' \
-        --include 'variant_enrichment_data*.csv' \
-        --include 'post_processing.log' \
-        --ignore-checksum --ignore-size \
-        --verbose --stats-one-line \
-        --transfers=4 --checkers=8
-    echo "rclone finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
+    if rclone mkdir "$remote" &&
+       rclone copy "$output_dir" "$remote" \
+           --include 'processed_data*.csv' \
+           --include 'variant_enrichment_data*.csv' \
+           --include 'post_processing.log' \
+           --ignore-checksum --ignore-size \
+           --verbose --stats-one-line \
+           --transfers=4 --checkers=8
+    then
+        echo "rclone finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
+    else
+        ((rclone_failed_count += 1))
+        echo "rclone failed for: $run_name" >&2
+    fi
 done
 
 echo "Job finished: $(date --iso-8601=seconds) (total elapsed: $(( ($(date +%s) - job_start) / 60 )) minutes)"
+
+if [[ "$failed_count" -gt 0 || "$rclone_failed_count" -gt 0 ]]; then
+    echo "Job completed with failures: Rscript=$failed_count, rclone=$rclone_failed_count" >&2
+    exit 1
+fi
