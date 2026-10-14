@@ -211,6 +211,22 @@ sbatch scripts/merge_lanes_fastq.sh <experiment_name>
 
 _Side note_: To download published data from SRA, you can use the `sra-tools` package available through the `conda`/`mamba` package manager.
 
+- **Important**: Backup the data to Sharepoint using the `transfer_to_sharepoint_fastq_v3.sh` script. This will copy the data to the Sharepoint directory and preserve the directory structure. The script uses `rclone` to transfer the data. Make sure to modify the paths: `REMOTE` and `LOCAL` in the script to point to the correct directories. Definitely use the `--dry-run` option first to see what files will be transferred without actually transferring them.
+  - You can check the status of the job using `squeue -u $USER` and check the logs in `logs_slurm/` using the `less` command. If the job fails, check the error log and try to fix the issue. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
+
+For dry run
+```sh
+sbatch scripts/transfer_to_sharepoint_fastq_v3.sh --dry-run
+```
+
+For the final transfer
+```sh
+sbatch scripts/transfer_to_sharepoint_fastq_v3.sh
+```
+
+(**important**): The data in `/scratch/alpine/$USER/data_staging/<experiment_name>/` is the working copy and it will be deleted every couple months automatically. 
+
+
 ## Running dimsum
 
 ### Configure the run
@@ -226,3 +242,27 @@ sbatch scripts/run_dimsum_hpc.sh <experiment_name>
 ``` 
 
 - Tips: for any errors, do try a couple times and use AI/stackoverflow help to debug. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
+
+## Navigation on HPC
+- (_prerequisite_) Make sure to clone the hpc_utils repository in your home directory. This repository contains useful scripts and aliases for navigating the HPC. You can clone it using the following command:
+```sh
+git clone https://github.com/ppreshant/hpc_utils.git
+```
+  - Follow the instructions in that readme to set up the aliases and scripts. The aliases are defined in the `~/.bashrc` file and are available after you login to the HPC. You can use the `alias` command to list all the available aliases.
+
+- Use the shortcut aliases to navigate to the relevant directories. 
+  - `repo_dim` to navigate to the DiMSum repository directory (with the code).
+  - `data_dim` to navigate to the data staging directory (with the FASTQ files) in `scratch`.
+  - `results_dim` to navigate to the DiMSum results directory (with the output files) in `scratch`.
+
+```sh
+cd_dimsum
+```
+
+**Tips**
+- To check the status of your jobs, use the `squeue -u $USER`
+- To check the logs of your jobs, use the `less` command on the log files in `logs_slurm/`. For example, to check the logs of a job with jobid 12345, use:
+```sh
+less logs_slurm/dimsum_12345.out
+```
+
