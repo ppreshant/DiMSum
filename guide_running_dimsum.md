@@ -51,7 +51,7 @@ config/<run_name>.params
 config/<run_name>.txt
 ```
 
-For a new experiment, copy the closest existing configuration and edit in VScode (_good for AI cleanup and error checking_) or any text editors like notepad/feathercalc/vim:
+For a new experiment, copy the closest existing configuration and edit in VScode or use Claude.AI etc. assistance (_good for AI cleanup and error checking_). You can manually edit in any text editors like notepad/feathercalc/vim:
 
 Use the wrapper to duplicate the desired config: defaults to duplicate `theoAptzNNN_lokya`
 ```sh
@@ -65,11 +65,42 @@ cp config/della_pilot_ez.txt config/my_experiment.txt
 ```
 
 ### Update config 
-- Update `config/my_experiment.params` with the experiment-specific `wildtype_sequence` and internal primer sequences for cutadapt (_these are the ends of the current raw reads that need to be trimmed. They will be the first primer used to amplify the sample (without the tails) and don't include the index sequences etc. added in the 2nd PCR_). 
+- Update `config/my_experiment.params` with the experiment-specific `wildtype_sequence` and internal primer sequences for cutadapt (_these are the ends of the current raw reads that need to be trimmed. They will be the first primer used to amplify the sample (without the tails) and don't include the index sequences etc. added in the 2nd PCR_).
+  - Do verify if the primers are correct by checking the first read or two in the Input/any FASTQ.gz file with an alignment to benchling. You can use `zcat` to view the first few lines of a gzipped FASTQ file:
+  ```bash
+  zcat ../data/my_experiment/GS2436UQ5AF_R1_001.fastq.gz | head -n 8
+  ```
 
 - Update `config/my_experiment.txt` so its FASTQ filenames and sample metadata match the files in `../data/my_experiment/`. See [FILEFORMATS.md](docs/FILEFORMATS.md) for the experiment design format.
-  - You can use AI generate this config: provide the current config (duplicated), the table of samples list and the `ls ../data/<current_experiment>` output with the list of files and AI does a pretty decent job.
+  - You can use AI generate this config: provide the current config (duplicated), the table of samples list and the `ls ../data/<current_experiment>` output with the list of files and AI does a pretty decent job. The AI helps autodetect and match the patterns from the human readable sample names to the FASTQ filenames. You can then manually verify the output and make any necessary adjustments.
+  
+Use this format to ask AI to do the config update:
 
+```text
+Edit my config file to match the new experiment. 
+```
+
+Here's the human readable sample names
+```csv
+sample_name condition shorthand
+Sample1 .. ..
+Sample2 .. .. 
+Sample3 .. ..
+```
+
+The new experiment has the following FASTQ files in ../data/my_experiment/:
+```sh
+GS2436UQ5AF_R1_001.fastq.gz
+...
+```
+
+Here's a template config file.
+```text
+sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
+input	1	1	1	1	GS2436UQ5AF_R1_001.fastq.gz	GS2436UQ5AF_R2_001.fastq.gz
+enriched	1	0		1	GS2431UQ5AF_R1_001.fastq.gz	GS2431UQ5AF_R2_001.fastq.gz
+```
+  
 
 ## Run DiMSum
 
@@ -168,12 +199,30 @@ Before submitting a job for a particular dataset
 2. copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/`.
 
 ## Download and pre-process data
-To download data from novogene, login to the HPC's scratch data directory and follow the instructions in the email to download the data. The data will be in a compressed format `.fq.gz` which will save a lot of space ~10x. _don't compress this file; code can read it directly_.
+- To download data from novogene:
+ login to the HPC's scratch data directory and follow the instructions in the email to download the data. The data will be in a compressed format `.fq.gz` which will save a lot of space ~10x. _don't compress this file; code can read it directly_.
 
-Side note: To download published data from SRA, you can use the `sra-tools` package. 
+- Standardize fastq data to R1/R2 format.
+ Merge the data files seprated by flowcells/lanes into the standard R1/R2 paired-end format. This is done using the `cat` command in linux. For example, if you have two flowcells for a sample, you can merge them as follows:
 
+```sh
+sbatch scripts/merge_lanes_fastq.sh <experiment_name>
+``` 
 
+_Side note_: To download published data from SRA, you can use the `sra-tools` package available through the `conda`/`mamba` package manager.
 
 ## Running dimsum
-..
 
+### Configure the run
+- Create a parameter file and an experiment design file in `config/`. Their filenames must use the same run name:
+See section above in for details: local run/[Configure a run](#configure-a-run)
+
+
+### Launch dimsum
+Launch the dimsum run using the slurm script. This will submit a job to the HPC queue and run dimsum on the allocated resources. The job will run in the background and you can check the status of the job using `squeue -u $USER`. The logs will be written to `logs_slurm/dimsum_<jobid>.out` and `logs_slurm/dimsum_<jobid>.err`. You can check the logs using the `less` command.
+
+```sh
+sbatch scripts/run_dimsum_hpc.sh <experiment_name>
+``` 
+
+- Tips: for any errors, do try a couple times and use AI/stackoverflow help to debug. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
