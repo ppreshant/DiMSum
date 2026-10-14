@@ -1,0 +1,7 @@
+name: tidyverse
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-tidyverse

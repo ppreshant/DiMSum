@@ -146,18 +146,34 @@ Now cd into the newly downloaded dimsum directory
 cd DiMSum
 ```
 
-2. initialize mamba environments.
+2. initialize mamba environments for dimsum and tidyverse (post processing using `dplyr`). Run this slurm script
+  - Note that slurm scripts run computational tasks in a batch/queue depending on the priority allocations. Read about allocations in the [allocations section/CURC documentation](https://curc.readthedocs.io/en/latest/clusters/alpine/allocations.html#fairshare-priority-and-allocations)
 
+```sh
+sbatch scripts/initialize_mamba_environments.sh
+```
 
+This should take about 15 minutes to run and will create the mamba environments in your home directory. You can check the status of the job using `squeue -u $USER` and check the logs in `logs_slurm/mamba_<jobid>.out` and `logs_slurm/mamba_<jobid>.err` using the `less` command. If the job fails, check the error log and try to fix the issue. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
+```sh
+less logs_slurm/mamba_<jobid>.out
+```
 
 3. Create the Slurm log, FASTQ staging, and DiMSum output's base directories by running the path initialization helper from the repository root:
 ```sh
 bash ./scripts/initialize_paths.sh
 ```
 
-Before submitting a job 
-- You will need to manually create subdirectoreies for each `<experiment_name>`. 
-- copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/`.
+Before submitting a job for a particular dataset 
+1. You will need to manually create subdirectoreies for each `<experiment_name>`. 
+2. copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/`.
+
+## Download and pre-process data
+To download data from novogene, login to the HPC's scratch data directory and follow the instructions in the email to download the data. The data will be in a compressed format `.fq.gz` which will save a lot of space ~10x. _don't compress this file; code can read it directly_.
+
+Side note: To download published data from SRA, you can use the `sra-tools` package. 
 
 
-3. 
+
+## Running dimsum
+..
+
