@@ -115,3 +115,49 @@ Before starting DiMSum, the launcher checks that both configuration files exist 
 # Issues? make a Github issue thread!
 If you encounter any issues the best way to contact Prashant is by documenting the error and the context of what you ran on a github issue thread here: https://github.com/ppreshant/DiMSum/issues
 
+# Running DiMSum on HPC
+
+## Prerequisites
+
+0. Make an HPC account using the guide doc: [Individual Set-Up for the Alpine HPC Cluster](https://colostate.sharepoint.com/:w:/r/sites/Arjun-Lab/_layouts/15/Doc.aspx?sourcedoc=%7B60fdbc00-1285-4674-a351-0cf05258f13f%7D&action=edit&wdPid=6c9094b4) 
+  - Do skim over the storage guidelines to get an idea of where the wrapper scripts are storing things. [Storing files on Alpine HPC cluster](https://colostate.sharepoint.com/:w:/r/sites/Arjun-Lab/_layouts/15/Doc.aspx?sourcedoc=%7BC33E462E-CC39-465D-B34C-6C623A540535%7D&file=Storing%20Files%20on%20Alpine%20HPC%20Cluster.docx&action=default&mobileredirect=true&wdwpf=doclib-t)
+
+1. Make a github account for yourself as a good practice. _This is not required to just run dimsum per-se_, but will come in handy when you need to make any changes (_which will happen inevitably_)
+
+## Setup
+_You run these only once per HPC account!_
+
+0. Make a directory to store DimSum code with some organization in `/home/$USER` directory (which is the default `~` when you login)
+```sh
+mkdir deepmut_variant_analysis
+cd deepmut_variant_analysis
+``` 
+
+1. Clone the repository fork from Prashant's github [fork](https://github.com/ppreshant/DiMSum) using this code. 
+  - Note that my repo has many convenience wrapper scripts to work in HPC and the original repo doesn't have these. (https://github.com/lehner-lab/DiMSum/)
+  - This url is available when clicking the green `<> Code>` button on my github link
+```sh
+git clone https://github.com/ppreshant/DiMSum.git
+```
+_If you intend to make changes to the repo, I recommend later changing the repo URL to the ssh url (`git@github.com:ppreshant/DiMSum.git`) after you make yourself an ssh key on the HPC_. References: [github and ssh](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) > 3,4 are relevant.
+
+Now cd into the newly downloaded dimsum directory
+```sh
+cd DiMSum
+```
+
+2. initialize mamba environments.
+
+
+
+3. Create the Slurm log, FASTQ staging, and DiMSum output's base directories by running the path initialization helper from the repository root:
+```sh
+bash ./scripts/initialize_paths.sh
+```
+
+Before submitting a job 
+- You will need to manually create subdirectoreies for each `<experiment_name>`. 
+- copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/`.
+
+
+3. 

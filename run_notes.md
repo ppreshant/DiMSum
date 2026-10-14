@@ -67,6 +67,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
 # 8/Oct/26 - post processing 
+- [x] Copy enriched data into sharepoint (duplicates, for easier access) ; (33661707)
 - created a base script on the NNN 
 - Expanding it to 3 different temperatures for Madison's 4NCM
 - [x] Test the post processing slurm script on Lokya epPCR
@@ -75,7 +76,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 ```sh
 sbatch post_process_slurm.sh theoAptzepPCR_lokya
 ```
-- [ ] Run post process for all files: 
+- [x] Run post process for all files: 
 ```sh
 batch post_process_slurm.sh
 ```
