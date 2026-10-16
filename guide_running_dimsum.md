@@ -238,10 +238,55 @@ See section above in for details: local run/[Configure a run](#configure-a-run)
 Launch the dimsum run using the slurm script. This will submit a job to the HPC queue and run dimsum on the allocated resources. The job will run in the background and you can check the status of the job using `squeue -u $USER`. The logs will be written to `logs_slurm/dimsum_<jobid>.out` and `logs_slurm/dimsum_<jobid>.err`. You can check the logs using the `less` command.
 
 ```sh
-sbatch scripts/run_dimsum_hpc.sh <experiment_name>
+sbatch slurm_dimsum.sh <experiment_name>
 ``` 
-
+- Check the section below for additional options to pass to the dimsum command.
 - Tips: for any errors, do try a couple times and use AI/stackoverflow help to debug. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
+
+## Additional command-line options
+
+### Slurm script additional command-line options
+The slurm script accepts the following options:
+
+- `<experiment_name>`: optional run name. If omitted, the default is
+  `della_pilot_ez`.
+- `--section <section> [<section> ...]`: run only selected sections instead of
+  the complete workflow. The available sections are:
+  - `dimsum`: run the DiMSum analysis.
+  - `parse`: parse the variant data and run post-processing.
+  - `copy`: copy the results to SharePoint using `rclone`.
+- `--section=<section>[,<section> ...]`: equivalent comma-separated form of
+  `--section`.
+- `--help`: print the usage message and available sections.
+
+At most two sections can be selected. For example:
+
+```sh
+# Run only DiMSum and variant parsing/post-processing
+sbatch slurm_dimsum.sh <experiment_name> --section dimsum parse
+
+# Run only the copy step
+sbatch slurm_dimsum.sh <experiment_name> --section copy
+
+# Equivalent comma-separated syntax
+sbatch slurm_dimsum.sh <experiment_name> --section=dimsum,parse
+```
+
+### DiMSum additional command-line options
+Additional arguments for the `DiMSum` command must follow `--`. Arguments
+before `--` are interpreted by the Slurm wrapper; arguments after `--` are
+passed unchanged to `DiMSum`.
+
+For example, to run DiMSum with the `--no-plot` option, you can use the following command:
+
+```sh
+sbatch slurm_dimsum.sh <experiment_name> -- --no-plot
+```
+
+For a list of all available options, you can navigate the documentation on the DiMSum repo [arguments.md](https://github.com/lehner-lab/DiMSum/blob/master/docs/ARGUMENTS.md) file.
+
+Or you can access the same information using the `DiMSum --help` command for a list of all available options. You can also use the `--help` option with the slurm script to see the available options.
+
 
 ## Navigation on HPC
 - (_prerequisite_) Make sure to clone the hpc_utils repository in your home directory. This repository contains useful scripts and aliases for navigating the HPC. You can clone it using the following command:
@@ -265,4 +310,3 @@ cd_dimsum
 ```sh
 less logs_slurm/dimsum_12345.out
 ```
-

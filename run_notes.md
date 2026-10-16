@@ -66,6 +66,13 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
+# 16/Oct/26 - incorporate post process
+- Incorporated
+- Now try out on della pilot with coding (*just to see what happens*): (34355175)
+```sh
+sbatch slurm_dimsum.sh della_pilot_ez --section dimsum parse -- --sequenceType coding
+```
+
 # 8/Oct/26 - post processing 
 - [x] Copy enriched data into sharepoint (duplicates, for easier access) ; (33661707)
 - created a base script on the NNN 
