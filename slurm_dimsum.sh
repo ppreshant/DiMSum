@@ -138,7 +138,9 @@ fi
 ## PARSE VARIANT DATA SECTION ----------------------
 
 if section_selected parse; then
+	
 	# Create a compact, user-facing variant table after DiMSum completes.
+	# Select: key nucleotide columns and add count frequencies and percentages.
 	merge_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
 	user_file="${output_dir}/variant_data_parsed.tsv"
 	stage_start=$(date +%s)
@@ -148,6 +150,38 @@ if section_selected parse; then
 	python scripts/parse_variant_data.py "$merge_file" "$user_file"
 
 	echo "Variant parsing finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
+
+	# post_processing on variant data
+	# Filter: Drop low count variants in input (0 or 1 counts) 
+	# Calculations: Calculates enrichment and leak based on frequencies in input, enriched and no inducer selection cols.
+	post_process_script="./scripts/post_process.R"
+	if [[ ! -f "$post_process_script" ]]; then
+		echo "Post-processing failed: script not found: $post_process_script" >&2
+		exit 1
+	fi
+	if [[ ! -f "$user_file" ]]; then
+		echo "Post-processing failed: parsed variant file not found: $user_file" >&2
+		exit 1
+	fi
+	if ! mamba activate tidyverse; then
+		echo "Post-processing failed: could not activate the tidyverse environment." >&2
+		exit 1
+	fi
+	if ! command -v Rscript >/dev/null 2>&1; then
+		echo "Post-processing failed: Rscript is not available in the tidyverse environment." >&2
+		exit 1
+	fi
+
+	post_process_start=$(date +%s)
+	if Rscript --vanilla "$post_process_script" "$user_file"; then
+		echo "Post-processing complete: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - post_process_start) / 60 )) minutes)"
+	else
+		post_process_status=$?
+		echo "Post-processing failed with exit status ${post_process_status}: $post_process_script $user_file" >&2
+		echo "Check the post-processing log alongside the input file: ${user_file%/*}/post_processing.log" >&2
+		exit "$post_process_status"
+	fi
+
 fi
 
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Author: Copilot AI, 15/Sep/26 w Prashant Kalvapalle
+# Description: Select key nucleotide columns and add count frequencies and percentages.
 
 import argparse
 import csv
