@@ -298,9 +298,12 @@ GS2436UQ5AF_R1_001.fastq.gz
 
 Here's the template config file you need to edit.
 \```text
-sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
-input	1	1	1	1	GS2436UQ5AF_R1_001.fastq.gz	GS2436UQ5AF_R2_001.fastq.gz
-enriched	1	0		1	GS2431UQ5AF_R1_001.fastq.gz	GS2431UQ5AF_R2_001.fastq.gz
+sample_name     experiment_replicate    selection_id    selection_replicate     technical_replicate     pair1   pair2
+InputCM 1       0               1       GS2553NNNCMInputLib_R1_001.fastq.gz     GS2553NNNCMInputLib_R2_001.fastq.gz
+neg25uM5fDUTheoCM       1       1       1       1       GS2555NNNCM25uMpassedLib_R1_001.fastq.gz        GS2555NNNCM25uMpassedLib_R2_001.fastq.gz
+neg50uM5fDUTheoCM       1       1       2       1       GS2556NNNCM50uMpassedLib_R1_001.fastq.gz        GS2556NNNCM50uMpassedLib_R2_001.fastq.gz
+neg75uM5fDUTheoCM       1       1       3       1       GS2557NNNCM75uMpassedLib_R1_001.fastq.gz        GS2557NNNCM75uMpassedLib_R2_001.fastq.gz
+Cneg25uMNoTheoCM        1       1       4       1       GS2592NNNCM25uMNoTheoLib_R1_001.fastq.gz        GS2592NNNCM25uMNoTheoLib_R2_001.fastq.gz
 \```
 ```
 
