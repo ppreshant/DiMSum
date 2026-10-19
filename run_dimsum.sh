@@ -2,7 +2,7 @@
 
 # runs dimsum on HPC. (activate using SLURM with the slurm_dimsum.sh script)
 # Run this within the DiMSum directory and the mamba environment.
-# Usage: ./run_dimsum.sh [--environment local|hpc] [--allow-only-caps-substitutions] [run_name] [dimsum_option ...]
+# Usage: ./run_dimsum.sh [--environment local|hpc] [--allow-only-caps-substitutions] [run_name] [--fastq-dir folder] [dimsum_option ...]
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
 environment="local"
@@ -22,6 +22,16 @@ if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
     shift
 fi
 
+fastq_tip_folder=""
+if [[ "${1:-}" == "--fastq-dir" ]]; then
+    if [[ $# -lt 2 ]]; then
+        echo "--fastq-dir requires a folder name" >&2
+        exit 1
+    fi
+    fastq_tip_folder="$2"
+    shift 2
+fi
+
 run_name="della_pilot_ez"
 if [[ $# -gt 0 && "$1" != --* ]]; then
     run_name="$1"
@@ -32,6 +42,21 @@ fi
 if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
     allow_only_caps_substitutions=true
     shift
+fi
+
+# The FASTQ folder option is intentionally a tip folder, not a full path.
+if [[ -z "$fastq_tip_folder" && "${1:-}" == "--fastq-dir" ]]; then
+    if [[ $# -lt 2 ]]; then
+        echo "--fastq-dir requires a folder name" >&2
+        exit 1
+    fi
+    fastq_tip_folder="$2"
+    shift 2
+fi
+
+if [[ -n "$fastq_tip_folder" && "$fastq_tip_folder" == */* ]]; then
+    echo "--fastq-dir must be a folder name, not a path: $fastq_tip_folder" >&2
+    exit 1
 fi
 
 dimsum_args=("$@")
@@ -56,7 +81,10 @@ esac
 # Set the paths for the parameter file, experiment design, fastq directory, and output directory
 params_file="config/${run_name}.params"
 experiment_design="config/${run_name}.txt"
-fastq_dir="${data_dir}/${run_name}"
+if [[ -z "$fastq_tip_folder" ]]; then
+    fastq_tip_folder="$run_name"
+fi
+fastq_dir="${data_dir}/${fastq_tip_folder}"
 # num_cores="${SLURM_CPUS_PER_TASK:-3}" # # not using; trying to fix OOM issues
 num_cores=3 # set to 3 cores to avoid OOM issues
 

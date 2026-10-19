@@ -25,6 +25,11 @@ git clone https://github.com/ppreshant/DiMSum.git
 ```
 _If you intend to make changes to the repo, I recommend later changing the repo URL to the ssh url (`git@github.com:ppreshant/DiMSum.git`) after you make yourself an ssh key on the HPC_. References: [github and ssh](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) > 3,4 are relevant.
 
+- Do note that you will need to pull in new changes occassionally (e.g. if Prashant makes a change to the wrapper scripts or if you make changes to your fork and want to pull them in). It's a good idea to pull changes every week or so if someone is actively working on the repo. You can do this by running the following commands in the `DiMSum` directory:
+```sh
+git pull origin main
+```
+
 Now cd into the newly downloaded dimsum directory
 ```sh
 cd DiMSum
@@ -37,7 +42,9 @@ cd DiMSum
 sbatch scripts/initialize_mamba_environments.sh
 ```
 
-This should take about 15 minutes to run and will create the mamba environments in your home directory. You can check the status of the job using `squeue -u $USER` and check the logs in `logs_slurm/mamba_<jobid>.out` and `logs_slurm/mamba_<jobid>.err` using the `less` command. If the job fails, check the error log and try to fix the issue. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
+Note: You can continue to the next step without waiting for this to finish. 
+
+This should take about 15 minutes to run and will create the mamba environments in your home directory. You can check the status of the job using `squeue -u $USER` and check the logs in `logs_slurm/mamba_<jobid>.out` and `logs_slurm/mamba_<jobid>.err` using the `less` or `cat` commands. If the job fails, check the error log and try to fix the issue. If you are unable to fix it, make a github issue thread with the error log and context of what you ran.
 ```sh
 less logs_slurm/mamba_<jobid>.out
 ```
@@ -365,6 +372,14 @@ Additional DiMSum command-line options can be placed after the run name and are 
 
 ```bash
 ./run_dimsum.sh my_experiment --someDiMSumOption value
+```
+
+If the FASTQ files are in a different folder under the configured data directory,
+provide its folder name with `--fastq-dir`. By default, the launcher uses the
+run name as the FASTQ folder name:
+
+```bash
+./run_dimsum.sh my_experiment --fastq-dir my_fastq_folder
 ```
 
 The local launcher uses three CPU cores to reduce memory usage. It also retains intermediate files.

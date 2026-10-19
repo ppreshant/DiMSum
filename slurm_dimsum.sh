@@ -17,13 +17,17 @@ mkdir -p "$TMPDIR"
 # ------------------end of slurm stuff --------------
 
 # Usage:
-#   sbatch slurm_dimsum.sh [run_name] [--section section [section ...]] [-- dimsum_option ...]
+#   sbatch slurm_dimsum.sh [run_name] [--fastq-dir folder] [--section section [section ...]] [-- dimsum_option ...]
 # Run all sections by default. Valid section keywords are: dimsum, parse, copy.
 # Examples:
 #   sbatch slurm_dimsum.sh
 #   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum parse
+#   sbatch slurm_dimsum.sh my_experiment --fastq-dir my_fastq_folder --section dimsum
 #   sbatch slurm_dimsum.sh della_pilot_ez --section copy
 #   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum -- --startStage 4
+#
+# --fastq-dir is an optional folder name under the HPC data staging directory.
+# It defaults to the run name and must be a folder name, not a full path.
 
 # source this file to help load modules (needed in non-interactive sessions)
 source ~/.bashrc
@@ -31,6 +35,7 @@ source ~/.bashrc
 run_name="della_pilot_ez"
 sections=()
 section_option_seen=false
+fastq_tip_folder=""
 dimsum_args=()
 
 if [[ $# -gt 0 && "$1" != --* ]]; then
@@ -60,9 +65,22 @@ while [[ $# -gt 0 ]]; do
 			sections+=("${requested_sections[@]}")
 			shift
 			;;
+		--fastq-dir)
+			if [[ $# -lt 2 ]]; then
+				echo "--fastq-dir requires a folder name" >&2
+				exit 1
+			fi
+			fastq_tip_folder="$2"
+			shift 2
+			;;
+		--fastq-dir=*)
+			fastq_tip_folder="${1#*=}"
+			shift
+			;;
 		--help|-h)
-			echo "Usage: sbatch slurm_dimsum.sh [run_name] [--section section [section ...]] [-- dimsum_option ...]"
+			echo "Usage: sbatch slurm_dimsum.sh [run_name] [--fastq-dir folder] [--section section [section ...]] [-- dimsum_option ...]"
 			echo "Sections: dimsum, parse, copy (all run by default)"
+			echo "--fastq-dir sets the FASTQ folder under the HPC data staging directory (defaults to run_name)"
 			exit 0
 			;;
 		--*)
@@ -75,6 +93,14 @@ while [[ $# -gt 0 ]]; do
 			;;
 	esac
 done
+
+if [[ -z "$fastq_tip_folder" ]]; then
+	fastq_tip_folder="$run_name"
+fi
+if [[ "$fastq_tip_folder" == */* ]]; then
+	echo "--fastq-dir must be a folder name, not a path: $fastq_tip_folder" >&2
+	exit 1
+fi
 
 if [[ "$section_option_seen" == true && ${#sections[@]} -eq 0 ]]; then
 	echo "--section requires one or two section keywords." >&2
@@ -130,7 +156,7 @@ if section_selected dimsum; then
 	# Run dimsum
 	stage_start=$(date +%s)
 	echo "DiMSum started: $(date --iso-8601=seconds)"
-	./run_dimsum.sh --environment hpc "$run_name" "${dimsum_args[@]}"
+	./run_dimsum.sh --environment hpc "$run_name" --fastq-dir "$fastq_tip_folder" "${dimsum_args[@]}"
 	echo "DiMSum finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
 fi
 
