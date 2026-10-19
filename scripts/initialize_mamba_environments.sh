@@ -20,11 +20,11 @@ mkdir -p "$TMPDIR"
 
 # load modules and create environment for DiMSum
 module load miniforge
-mamba create -f envs/dimsum_full.yaml
+mamba env create -f envs/dimsum_full.yaml
 
 ## tidyverse environment setup script ---------
 # load modules and create environment for tidyverse
-mamba create -f envs/tidyverse.yaml
+mamba env create -f envs/tidyverse.yaml
 
 # check if the tidyverse environment was created successfully
 mamba list r-tidyverse
