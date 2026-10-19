@@ -280,12 +280,15 @@ scp ./<run_name>.txt <myusername>@<hpc_path>:<path_to_txt_file> .
 
 ### Modify config/params
 Update `config/my_experiment.params` with the experiment-specific `wildtype_sequence` and internal primer sequences for cutadapt (_these are the ends of the current raw reads that need to be trimmed. They will be the first primer used to amplify the sample (without the tails) and don't include the index sequences etc. added in the 2nd PCR_).
-- Do verify if the primers are correct by checking the first read or two in the Input/any FASTQ.gz file with an alignment to benchling. 
-- You can use `zcat` and `head` to view the first few lines of a gzipped FASTQ file: (note: `zcat` is used to decompress the `.gz` file while doing a `cat` to show the contents and `head` is used to display the first few lines)
+
+- Use Benchling alignment to properly delineate the primers and wildtype sequence by. You can align the first read or two in the Input/any FASTQ.gz file. 
+  1. You can use `zcat` and `head` to view the first few lines of a gzipped FASTQ file: (note: `zcat` is used to decompress the `.gz` file while doing a `cat` to show the contents and `head` is used to display the first few lines)
 ```bash
 zcat ../data/my_experiment/GS2436UQ5AF_R1_001.fastq.gz | head -n 8
 ```
-- Copy the line with the sequencing read and paste it as a query in a benchling alignment. The primers should match the ends of the read and the sequence between the primers is the wildtype sequence.
+  2. Copy the line with the sequencing read and paste it as a query in a benchling alignment. The primers should match the ends of the read and the sequence between the primers is the wildtype sequence (excluding the primers).
+
+- Designate the wildtype sequence and primers in the `config/my_experiment.params` file. Note that the reverse primer sequence is 5' to 3' (the exact sequence of the primer used in the PCR) so if you copy that portion of the template sequence, you need to reverse complement it.
 
 ### Modify config/txt
 Update `config/my_experiment.txt` so its FASTQ filenames and sample metadata match the files in `../data/my_experiment/`. See [FILEFORMATS.md](docs/FILEFORMATS.md) for the experiment design format.
