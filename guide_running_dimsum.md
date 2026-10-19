@@ -142,7 +142,17 @@ Or you can access the same information using the `DiMSum --help` command for a l
 
 
 ## Navigation on HPC
-- (_prerequisite_) Make sure to clone the hpc_utils repository in your home directory. This repository contains useful scripts and aliases for navigating the HPC. You can clone it using the following command:
+- For easy navigation on the HPC, you can load aliases that give you shortcuts to quickly `cd` to the relevant directories. Load them on each login by running the script below. 
+```sh
+source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh
+```
+
+You can also add the above line to your `~/.bashrc` file to load them automatically on each login.
+```sh
+echo "source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh" >> ~/.bashrc
+``` 
+
+- For a more advanced setup, there are more aliases and scripts available in the `hpc_utils` repository. This repository contains useful scripts and aliases for navigating the HPC. You can clone it using the following command:
 ```sh
 git clone https://github.com/ppreshant/hpc_utils.git
 ```
@@ -153,8 +163,9 @@ git clone https://github.com/ppreshant/hpc_utils.git
   - `data_dim` to navigate to the data staging directory (with the FASTQ files) in `scratch`.
   - `results_dim` to navigate to the DiMSum results directory (with the output files) in `scratch`.
 
+Example: To navigate to the DiMSum repository directory, use
 ```sh
-cd_dimsum
+repo_dim
 ```
 
 **Tips**

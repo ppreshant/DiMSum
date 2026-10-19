@@ -32,3 +32,17 @@ echo "Created HPC DiMSum paths:"
 echo "  Slurm logs:     ${repo_dir}/logs_slurm"
 echo "  FASTQ staging:  ${data_dir}/"
 echo "  DiMSum output:  ${output_base_dir}"
+
+# load aliases for easy navigation to the directories
+source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh
+
+# Add aliases for easy navigation to the directories
+echo "Adding aliases to ~/.bashrc for easy navigation to the directories."
+
+echo "\n# DiMSum aliases for easy navigation" >> ~/.bashrc
+echo "source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh" >> ~/.bashrc
+
+echo "Done. You can now use the following aliases to navigate to the directories:"
+echo "  repo_dim:     cd to the DiMSum repository directory"
+echo "  data_dim:     cd to the data staging directory (with the FASTQ files) in scratch"
+echo "  results_dim:  cd to the DiMSum results directory (with the output files) in scratch"
