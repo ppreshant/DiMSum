@@ -225,7 +225,46 @@ Use the wrapper script to duplicate the desired config: defaults to duplicate th
 ./scripts/duplicate_config.sh <new_config_name> [source_config_name]
 ```
 
-### Modify config/params 
+### Modify config: Logistics (method 1)
+To edit these files directly on the HPC, you can use the `vim` command. Follow along in the section below and skip the method 2 below if you are comfortable with `vim` or would like to learn it quick. An alternative to `vim`, is the `nano` command if that is more familiar to you.
+
+- To copy file content from the HPC to clipboard, you can use the `cat` command to display the file content and then copy it from the terminal with this shortcut. For example, 
+```bash
+cat config/<run_name>.params
+```
+  - Then paste it into a text editor on your local machine (in the claude prompt that you will edit)
+- To copy file content from your local machine to the HPC, copy it to your clipboard and paste it into the current file with the `vim` command. For example, to edit the params file:
+```bash
+vim config/<run_name>.params
+```
+  1. Delete the existing content by pressing `dG` (`d-shift-G` to delete to end of file) 
+  2. Now press `i` to enter insert mode, then paste the content from your clipboard. 
+  3. After pasting, press `Esc` to exit insert mode, then type `:wq` and press `Enter` to save and exit.
+
+
+### Modify config: Logistics (method 2)
+Alternatively, the best way to edit these files is to download them locally and edit in VScode or any text editor. Then upload the files back to the HPC.
+
+**Download**
+1. Find the path of the files using realpath command:
+```sh
+realpath config/<run_name>.params
+```
+2. Now open a new terminal in your local machine and use the `scp` command to download the files. For example, if your HPC username is `myusername` and the HPC address is `hpc.colostate.edu`, you can use the following commands to download them to the home directory of your local machine:
+```bash
+scp <myusername>@<hpc_path>:<path_to_params_file> .
+scp <myusername>@<hpc_path>:<path_to_txt_file> .
+``` 
+3. Edit the files locally and save the changes using the documentation below. 
+
+**Upload**
+Then upload the files back to the HPC using the `scp` command:
+```bash
+scp ./<run_name>.params <myusername>@<hpc_path>:<path_to_params_file> .
+scp ./<run_name>.txt <myusername>@<hpc_path>:<path_to_txt_file> .
+```
+
+### Modify config/params
 Update `config/my_experiment.params` with the experiment-specific `wildtype_sequence` and internal primer sequences for cutadapt (_these are the ends of the current raw reads that need to be trimmed. They will be the first primer used to amplify the sample (without the tails) and don't include the index sequences etc. added in the 2nd PCR_).
 - Do verify if the primers are correct by checking the first read or two in the Input/any FASTQ.gz file with an alignment to benchling. You can use `zcat` to view the first few lines of a gzipped FASTQ file:
 ```bash
@@ -238,30 +277,33 @@ Update `config/my_experiment.txt` so its FASTQ filenames and sample metadata mat
 - You can use AI (VScode/Claude) to generate this config: provide the current config (for format template), the table of samples list and the `ls ../data/<current_experiment>` output with the list of files and AI does a pretty decent job. The AI helps autodetect and match the patterns from the human readable sample names to the FASTQ filenames. You can then manually verify the output and make any necessary adjustments.
   
 Use this format to ask AI to do the config update:
+Paste this prompt into a text file, make edits by copy pasting content from the current config file and list of FASTQ files in the HPC. Then ask AI to generate the new config file. You can then copy paste the output into the new config file, verify it (excel works  best) and replace the content of the file in HPC.
 
+```text
 Edit my config file to match the new experiment using the information below. 
 
 Here's the human readable sample names
-```csv
+\```csv
 sample_name condition shorthand
 Sample1 .. ..
 Sample2 .. .. 
 Sample3 .. ..
-```
+\```
 
 The new experiment has the following FASTQ files in ../data/my_experiment/:
-```sh
+\```sh
 GS2436UQ5AF_R1_001.fastq.gz
 ...
-```
+\```
 
-Here's a template config file.
-```text
+Here's the template config file you need to edit.
+\```text
 sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
 input	1	1	1	1	GS2436UQ5AF_R1_001.fastq.gz	GS2436UQ5AF_R2_001.fastq.gz
 enriched	1	0		1	GS2431UQ5AF_R1_001.fastq.gz	GS2431UQ5AF_R2_001.fastq.gz
+\```
 ```
-  
+
 
 ## Run DiMSum
 
