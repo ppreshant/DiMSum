@@ -225,7 +225,7 @@ Use the wrapper script to duplicate the desired config: defaults to duplicate th
 ./scripts/duplicate_config.sh <new_config_name> [source_config_name]
 ```
 
-### Modify config: Logistics (method 1)
+### Modify config: Logistics (method 1): Direct editing on HPC
 To edit these files directly on the HPC, you can use the `vim` command. Follow along in the section below and skip the method 2 below if you are comfortable with `vim` or would like to learn it quick. An alternative to `vim`, is the `nano` command if that is more familiar to you.
 
 - To copy file content from the HPC to clipboard, you can use the `cat` command to display the file content and then copy it from the terminal with this shortcut. For example, 
@@ -238,11 +238,25 @@ cat config/<run_name>.params
 vim config/<run_name>.params
 ```
   1. Delete the existing content by pressing `dG` (`d-shift-G` to delete to end of file) 
-  2. Now press `i` to enter insert mode, then paste the content from your clipboard. 
-  3. After pasting, press `Esc` to exit insert mode, then type `:wq` and press `Enter` to save and exit.
+  2. (extra) You can press `i` to enter insert mode, to do finer edits within a line.
+  3. Paste the new content from your clipboard by pressing `Ctrl-Shift-V` (or `Shift-Insert` depending on your terminal emulator).
+  4. After pasting, press `Esc` to exit insert mode, then type `:wq` and press `Enter` to save and exit.
 
+### Modify config: Logistics (method 2): local clone of repo
+Alternatively, you can clone the repository to your local machine and edit the files in VScode or any text editor. Then push the changes back to the HPC using `git`. This is a more advanced method and requires some familiarity with `git` commands.
+1. Clone the repository to your local machine:
+```bash
+git clone https://github.com/ppreshant/DiMSum.git
+```
+2. Edit the files in `config/` with the new run name.
+3. Commit the changes and push them back to the HPC:
+```bash
+git add config/<run_name>.params config/<run_name>.txt
+git commit -m "Update config for <run_name>"
+git push origin main
+``` 
 
-### Modify config: Logistics (method 2)
+### Modify config: Logistics (method 3): copy files to local machine
 Alternatively, the best way to edit these files is to download them locally and edit in VScode or any text editor. Then upload the files back to the HPC.
 
 **Download**
@@ -266,10 +280,12 @@ scp ./<run_name>.txt <myusername>@<hpc_path>:<path_to_txt_file> .
 
 ### Modify config/params
 Update `config/my_experiment.params` with the experiment-specific `wildtype_sequence` and internal primer sequences for cutadapt (_these are the ends of the current raw reads that need to be trimmed. They will be the first primer used to amplify the sample (without the tails) and don't include the index sequences etc. added in the 2nd PCR_).
-- Do verify if the primers are correct by checking the first read or two in the Input/any FASTQ.gz file with an alignment to benchling. You can use `zcat` to view the first few lines of a gzipped FASTQ file:
+- Do verify if the primers are correct by checking the first read or two in the Input/any FASTQ.gz file with an alignment to benchling. 
+- You can use `zcat` and `head` to view the first few lines of a gzipped FASTQ file: (note: `zcat` is used to decompress the `.gz` file while doing a `cat` to show the contents and `head` is used to display the first few lines)
 ```bash
 zcat ../data/my_experiment/GS2436UQ5AF_R1_001.fastq.gz | head -n 8
 ```
+- Copy the line with the sequencing read and paste it as a query in a benchling alignment. The primers should match the ends of the read. If they don't, you may need to adjust the primer sequences in the params file.
 
 ### Modify config/txt
 Update `config/my_experiment.txt` so its FASTQ filenames and sample metadata match the files in `../data/my_experiment/`. See [FILEFORMATS.md](docs/FILEFORMATS.md) for the experiment design format.
