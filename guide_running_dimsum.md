@@ -285,7 +285,7 @@ Update `config/my_experiment.params` with the experiment-specific `wildtype_sequ
 ```bash
 zcat ../data/my_experiment/GS2436UQ5AF_R1_001.fastq.gz | head -n 8
 ```
-- Copy the line with the sequencing read and paste it as a query in a benchling alignment. The primers should match the ends of the read. If they don't, you may need to adjust the primer sequences in the params file.
+- Copy the line with the sequencing read and paste it as a query in a benchling alignment. The primers should match the ends of the read and the sequence between the primers is the wildtype sequence.
 
 ### Modify config/txt
 Update `config/my_experiment.txt` so its FASTQ filenames and sample metadata match the files in `../data/my_experiment/`. See [FILEFORMATS.md](docs/FILEFORMATS.md) for the experiment design format.
