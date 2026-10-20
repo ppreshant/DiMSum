@@ -39,7 +39,7 @@ source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh
 # Add aliases for easy navigation to the directories
 echo "Adding aliases to ~/.bashrc for easy navigation to the directories."
 
-echo "\n# DiMSum aliases for easy navigation" >> ~/.bashrc
+echo "# DiMSum aliases for easy navigation" >> ~/.bashrc
 echo "source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh" >> ~/.bashrc
 
 echo "Done. You can now use the following aliases to navigate to the directories:"
