@@ -98,7 +98,7 @@ See section above in for details: local run/[Configure a run](#configure-a-run)
 
 
 ### Launch dimsum
-Launch the dimsum run using the slurm script. This will submit a job to the HPC queue and run dimsum on the allocated resources. The job will run in the background and you can check the status of the job using `squeue -u $USER`. The logs will be written to `logs_slurm/dimsum_<jobid>.out` and `logs_slurm/dimsum_<jobid>.err`. You can check the logs using the `less` command.
+Launch the dimsum run using the slurm script. This will submit a job to the HPC queue and run dimsum on the allocated resources. The job will run in the background and you can check the status of the job using `squeue -u $USER`. The logs will be written to `logs_slurm/<jobid>.out` and `logs_slurm/<jobid>.err`. You can check the logs using the `less` command.
 
 ```sh
 sbatch slurm_dimsum.sh <experiment_name>
@@ -189,7 +189,7 @@ repo_dim
 - To check the status of your jobs, use the `squeue -u $USER`
 - To check the logs of your jobs, use the `less` command on the log files in `logs_slurm/`. For example, to check the logs of a job with jobid 12345, use:
 ```sh
-less logs_slurm/dimsum_12345.out
+less logs_slurm/12345.out
 ```
 
 # Running DiMSum locally
@@ -324,12 +324,12 @@ Update `config/my_experiment.txt` so its FASTQ filenames and sample metadata mat
 - You can use AI (VScode/Claude) to generate this config: provide the current config (for format template), the table of samples list and the `ls ../data/<current_experiment>` output with the list of files and AI does a pretty decent job. The AI helps autodetect and match the patterns from the human readable sample names to the FASTQ filenames. You can then manually verify the output and make any necessary adjustments.
   
 Use this format to ask AI to do the config update:
-Paste this prompt into a text file, make edits by copy pasting content from the current config file and list of FASTQ files in the HPC. Then ask AI to generate the new config file. You can then copy paste the output into the new config file, verify it (excel works  best) and replace the content of the file in HPC.
+Paste this prompt into a text file, make edits to replace the **sample names** and **list of fastq files** by copy pasting content from the current config file and list of FASTQ files in the HPC. Then ask AI to generate the new config file. You can then copy paste the output into the new config file, verify it (excel works  best) and replace the content of the file in HPC.
 
 ```text
-Edit my config file to match the new experiment using the information below. 
+Edit my config file to match the new experiment using the information below. Ensure that the final sample_name column has alphanumeric characters only and begins with a alphabet.
 
-Here's the human readable sample names
+**Here's the human readable sample names**
 \```csv
 sample_name condition shorthand
 Sample1 .. ..
@@ -337,7 +337,7 @@ Sample2 .. ..
 Sample3 .. ..
 \```
 
-The new experiment has the following FASTQ files in ../data/my_experiment/:
+The new experiment has the following **FASTQ files**
 \```sh
 GS2436UQ5AF_R1_001.fastq.gz
 ...
@@ -352,6 +352,19 @@ neg50uM5fDUTheoCM       1       1       2       1       GS2556NNNCM50uMpassedLib
 neg75uM5fDUTheoCM       1       1       3       1       GS2557NNNCM75uMpassedLib_R1_001.fastq.gz        GS2557NNNCM75uMpassedLib_R2_001.fastq.gz
 Cneg25uMNoTheoCM        1       1       4       1       GS2592NNNCM25uMNoTheoLib_R1_001.fastq.gz        GS2592NNNCM25uMNoTheoLib_R2_001.fastq.gz
 \```
+
+Guidelines for the column naming:
+    Your file must have the following columns:
+
+    sample_name A sensible sample name e.g. 'input1' (alphanumeric characters only).
+    experiment_replicate An integer identifier denoting distinct experiments (e.g. distinct plasmid library transformations) i.e. a set of input and output replicates originating from the same input biological replicate (strictly positive integer).
+    selection_id An integer inidicating whether samples were sequenced before (0) or after (1) selection.
+    selection_replicate (Output samples only) An integer denoting distinct replicate selections (or biological output replicates) each derived from the same input sample (strictly positive integer). Entries should be blank (empty string) for all input samples (each input sample corresponds to a unique experiment). NOTE: DiMSum simply sums variant counts over selection replicates (i.e. no error modelling of replicate selections associated with the same input sample).
+    technical_replicate An integer denoting technical replicates (a strictly positive integer) corresponding to sample re-sequencing i.e. extracted DNA originating from the same sample split between separate sequencing lanes or files. Leave this column blank (empty string) when no technical replicates are present.
+    pair1 (WRAP only) FASTQ file name of the first read in a given pair.
+    pair2 (WRAP only) FASTQ file name of the second read in a given pair (omit for single-end library designs, see arguments).
+
+
 ```
 
 
