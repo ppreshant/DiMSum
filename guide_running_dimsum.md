@@ -56,7 +56,10 @@ bash ./scripts/initialize_paths.sh
 
 Before submitting a job for a particular dataset 
 1. You will need to manually create subdirectoreies for each `<experiment_name>`. 
-2. copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/`.
+2. And copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/` if they are elsewhere in `/projects/..` etc.
+
+For easy nagivation on the HPC, follow the directions in the section: [HPC Navigation](#hpc-navigation), where you can load aliases that give you shortcuts to quickly `cd` to the relevant directories. 
+
 
 ## Download and pre-process data
 - To download data from novogene:
@@ -110,6 +113,10 @@ The slurm script accepts the following options:
 
 - `<experiment_name>`: optional run name. If omitted, the default is
   `della_pilot_ez`.
+- `--fastq-dir <folder>`: optional FASTQ folder name under the HPC data
+  staging directory (`/scratch/alpine/$USER/data_staging/`). If omitted, the
+  run name is used as the FASTQ folder name. This parameter accepts only the
+  folder name, not a full path.
 - `--section <section> [<section> ...]`: run only selected sections instead of
   the complete workflow. The available sections are:
   - `dimsum`: run the DiMSum analysis.
@@ -124,6 +131,9 @@ At most two sections can be selected. For example:
 ```sh
 # Run only DiMSum and variant parsing/post-processing
 sbatch slurm_dimsum.sh <experiment_name> --section dimsum parse
+
+# Use a FASTQ folder whose name differs from the experiment name
+sbatch slurm_dimsum.sh <experiment_name> --fastq-dir <fastq_folder> --section dimsum
 
 # Run only the copy step
 sbatch slurm_dimsum.sh <experiment_name> --section copy
