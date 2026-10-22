@@ -43,8 +43,8 @@ multiple_temp_mode <- FALSE # default to single temperature mode
 ## Regex patterns ---------------------
 # Detect the columns for calculations: input, enrichment, leak
 input_signature <- "Input"
-enrich_signature <- "(neg25uM5fDUTheo|UraHisTheo)"
-leak_signature <- "(NoTheo|UraHisVeh)"
+enrich_signature <- "(neg25uM5fDUTheo|UraHisTheo|Enriched)"
+leak_signature <- "(NoTheo|UraHisVeh|Unenriched)"
 theo_effect_signature <- "UraTheo"
 
 type_suffix <- ".*_freq"
