@@ -11,6 +11,7 @@ _refer to the section below for local run (without slurm)_
 ## Setup
 _You run these only once per HPC account!_
 
+### Get the dimsum code repository
 0. Make a directory to store DimSum code with some organization in `/home/$USER` directory (which is the default `~` when you login)
 ```sh
 mkdir deepmut_variant_analysis
@@ -35,6 +36,7 @@ Now cd into the newly downloaded dimsum directory
 cd DiMSum
 ```
 
+### Initialize mamba environments
 2. initialize mamba environments for dimsum and tidyverse (post processing using `dplyr`). Run this slurm script
   - Note that slurm scripts run computational tasks in a batch/queue depending on the priority allocations. Read about allocations in the [allocations section/CURC documentation](https://curc.readthedocs.io/en/latest/clusters/alpine/allocations.html#fairshare-priority-and-allocations)
 
@@ -49,17 +51,59 @@ This should take about 15 minutes to run and will create the mamba environments 
 less logs_slurm/mamba_<jobid>.out
 ```
 
+### Initialize directory structure
 3. Create the Slurm log, FASTQ staging, and DiMSum output's base directories by running the path initialization helper from the repository root:
 ```sh
 bash ./scripts/initialize_paths.sh
 ```
 
 Before submitting a job for a particular dataset 
-1. You will need to manually create subdirectoreies for each `<experiment_name>`. 
-2. And copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/` if they are elsewhere in `/projects/..` etc.
+  1. You will need to manually create subdirectoreies for each `<experiment_name>`. 
+  2. And copy the experiment's FASTQ files into `/scratch/alpine/$USER/data_staging/<experiment_name>/` if they are elsewhere in `/projects/..` etc.
 
-For easy nagivation on the HPC, follow the directions in the section: [HPC Navigation](#hpc-navigation), where you can load aliases that give you shortcuts to quickly `cd` to the relevant directories. 
+For easy navigation on the HPC, follow the directions in the section: [HPC Navigation](#navigation-on-hpc), where you can load aliases that give you shortcuts to quickly `cd` to the relevant directories. 
 
+### Set up rclone for OneDrive/Arjun Lab SharePoint
+4. Configure `rclone` once for transferring data to the Arjun Lab SharePoint/OneDrive storage. The HPC provides `rclone` as a module:
+
+```sh
+rclone version
+rclone config
+```
+
+Note: If rclone doesn't show up, load the module first in an interactive session:
+```sh
+sinteractive --time=01:00:00 --ntasks=1 --cpus-per-task=1 --mem=8G --qos=cpu-normal --partition=acpu
+```
+wait for 2 minutes for the interactive session to start, then run
+```sh
+module load rclone
+```
+
+In the interactive configuration menu:
+
+1. Select `n` to create a new remote.
+2. Use `onedrive_csu` as the remote name. The wrapper scripts in this repository expect this name.
+3. Select the `Microsoft OneDrive` storage type by typing `onedrive`/`38` (option # `38`).
+4. Leave the client ID and client secret blank unless the lab has provided custom values.
+5. Press enter to select the default: Microsoft cloud global when prompted (option #`1`).
+6. Leave empty value for the tenant; and press enter to default to no (option `n`) to skip editing advanced config.
+7. Select `n` to the web-browser authentication question. The HPC cannot open a browser. 
+  1. Now open another terminal on your local computer and install rclone if needed ([documentation](https://rclone.org/install/)). 
+  2. Run `rclone authorize "onedrive"` and sign in through the browser in your local computer. 
+  3. Then, paste the token shown into the HPC prompt. Approve the requested permissions in your browser.
+8. When prompted to select a drive, choose the Arjun Lab SharePoint site and its document library (usually shown as a SharePoint or shared-document drive), rather than a personal OneDrive drive.
+9. Confirm the configuration and select `y` to save it.
+10. Verify that the rclone remote works before submitting a transfer job.
+
+```sh
+rclone lsd onedrive_csu:
+rclone lsjson onedrive_csu: --max-depth 1
+```
+
+The commands should list the configured SharePoint/OneDrive location without an authentication error. If the wrong drive was selected, run `rclone config` again, choose `e` to edit `onedrive_csu`, and select the correct SharePoint site/document library.
+
+This one-time setup allows the repository's transfer scripts to copy data to SharePoint. Before running a transfer, check that the `remote`/`REMOTE` path in the script points to the intended folder under `onedrive_csu:`. It is a good idea to run the transfer with `--dry-run` first so that you can verify the files and destination (but that is not possible in a scripted transfer case like ours).
 
 ## Download and pre-process data
 - To download data from novogene:
@@ -159,12 +203,15 @@ Or you can access the same information using the `DiMSum --help` command for a l
 
 
 ## Navigation on HPC
-- For easy navigation on the HPC, you can load aliases that give you shortcuts to quickly `cd` to the relevant directories. Load them on each login by running the script below. 
+- For easy navigation on the HPC, you can load aliases that give you shortcuts to quickly `cd` to the relevant directories. These are automatically loaded when initializing the paths in the setup step above. The aliases are defined in the `aliases_dimsum.sh` file in the `scripts` directory of the repository. 
+
+
+If you need to reload the aliases manually (upon editing etc.), you can run the following command in the terminal (upon each login):
 ```sh
 source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh
 ```
 
-You can also add the above line to your `~/.bashrc` file to load them automatically on each login.
+You can also add the above line to your `~/.bashrc` file to load them automatically on each login. This code adds the line for you.
 ```sh
 echo "source /home/$USER/deepmut_variant_analysis/DiMSum/scripts/aliases_dimsum.sh" >> ~/.bashrc
 ``` 
