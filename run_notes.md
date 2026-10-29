@@ -66,6 +66,16 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
+# 29/Oct/26 - more runs: Lokya della enriched
+_Lokya's della dataset is having some issues running on his hpc, will try and run it
+- (failed at stage 3, vsearch not writing files) check lokya's run: `squeue -u c837636661@colostate.edu` (35013876)
+- (29/Oct/26) Rerun lokya's enriched full dataset (35062121)
+```sh
+sbatch --mem=50G --cpus-per-task=13 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya
+```
+
+- [ ] Add a procedure to sign into rclone/sharepoint in the guide doc
+
 # 16/Oct/26 - incorporate post process
 - Incorporated
 - Now try out on della pilot with coding (*just to see what happens*): (34355175)
