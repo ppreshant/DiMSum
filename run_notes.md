@@ -74,7 +74,15 @@ _Lokya's della dataset is having some issues running on his hpc, will try and ru
 sbatch --mem=50G --cpus-per-task=13 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya
 ```
 
-- [ ] Add a procedure to sign into rclone/sharepoint in the guide doc
+- If OOM issues are causing this (_silently_), let's break the data and run it seperately for each input (PCR number)
+  - Created simlinks of the unchanging `.params` using this line :
+```sh
+for i in {2..6}; do ln -s della_enriched_library_lokya.params della_enriche
+d_PCR$i.params; done
+```  
+ - [ ] Use AI in VScode to break the `.txt` file into multiple and commit it in linux box.
+
+- [x] Add a procedure to sign into rclone/sharepoint in the guide doc
 
 # 16/Oct/26 - incorporate post process
 - Incorporated
