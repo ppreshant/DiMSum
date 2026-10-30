@@ -1,0 +1,16 @@
+sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
+PCR2Input	1	0		1	GS2617_BF_ENRCH_R1_001.fastq.gz	GS2617_BF_ENRCH_R2_001.fastq.gz
+PCR2Enriched	1	1	1	1	GS2615_ENRD_R1_001.fastq.gz	GS2615_ENRD_R2_001.fastq.gz
+PCR2Unenriched	1	1	2	1	GS2616_Non_ENRD_R1_001.fastq.gz	GS2616_Non_ENRD_R2_001.fastq.gz
+PCR3Input	2	0		1	GS2620_BF_ENRCH_R1_001.fastq.gz	GS2620_BF_ENRCH_R2_001.fastq.gz
+PCR3Enriched	2	1	1	1	GS2618_ENRD_R1_001.fastq.gz	GS2618_ENRD_R2_001.fastq.gz
+PCR3Unenriched	2	1	2	1	GS2619_Non_ENRD_R1_001.fastq.gz	GS2619_Non_ENRD_R2_001.fastq.gz
+PCR4Input	3	0		1	GS2623_BF_ENRCH_R1_001.fastq.gz	GS2623_BF_ENRCH_R2_001.fastq.gz
+PCR4Enriched	3	1	1	1	GS2621_ENRD_R1_001.fastq.gz	GS2621_ENRD_R2_001.fastq.gz
+PCR4Unenriched	3	1	2	1	GS2622_Non_ENRD_R1_001.fastq.gz	GS2622_Non_ENRD_R2_001.fastq.gz
+PCR5Input	4	0		1	GS2626_BF_ENRCH_R1_001.fastq.gz	GS2626_BF_ENRCH_R2_001.fastq.gz
+PCR5Enriched	4	1	1	1	GS2624_ENRD_R1_001.fastq.gz	GS2624_ENRD_R2_001.fastq.gz
+PCR5Unenriched	4	1	2	1	GS2625_Non_ENRD_R1_001.fastq.gz	GS2625_Non_ENRD_R2_001.fastq.gz
+PCR6Input	5	0		1	GS2629_BF_ENRCH_R1_001.fastq.gz	GS2629_BF_ENRCH_R2_001.fastq.gz
+PCR6Enriched	5	1	1	1	GS2627_ENRD_R1_001.fastq.gz	GS2627_ENRD_R2_001.fastq.gz
+PCR6Unenriched	5	1	2	1	GS2628_Non_ENRD_R1_001.fastq.gz	GS2628_Non_ENRD_R2_001.fastq.gz
