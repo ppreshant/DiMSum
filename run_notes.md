@@ -70,8 +70,9 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 - (failed at stage 3, vsearch not writing files) check lokya's run: `squeue -u c837636661@colostate.edu` (35013876)
 - (29/Oct/26) Rerun lokya's enriched full dataset (35062121)
+  - 50 GB failed with OOM killed in stage 4 (`processing merged variants...`); data is 30 GB (vs 9 GB for 3R5; .. so 100 GB RAM should be plenty) 
 ```sh
-sbatch --mem=50G --cpus-per-task=13 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya
+sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya -- --startStage 4
 ```
 
 - If OOM issues are causing this (_silently_), let's break the data and run it seperately for each input (PCR number)
