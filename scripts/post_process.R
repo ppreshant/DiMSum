@@ -293,11 +293,23 @@ processed_data <- bind_cols(filtered_data, scored_columns) |>
     desc(.data[[names(scored_columns)[[1]]]])
   )
 
+# write CSV file of processed data for downstream analysis
 write.csv(
   processed_data,
-  file = file.path(dirname(file_path), "processed_data.csv"),
+  file = file.path(dirname(file_path), "parsed_scores_v1.csv"),
   row.names = FALSE
 )
+
+# write RData file for downstream analysis
+write_rds(
+  processed_data,
+  file = file.path(dirname(file_path), "parsed_scores_v1.RData")
+)
+
+# message about files written
+cat("\n\nComplete! Processed data written to: ",
+    file.path(dirname(file_path), "parsed_scores_v1.csv & .RData"), "\n")
+
 
 for (row in seq_len(nrow(temp_table))) {
   temperature <- temp_table$temperature[[row]]
@@ -336,7 +348,7 @@ for (row in seq_len(nrow(temp_table))) {
     processed_concise,
     file = file.path(
       dirname(file_path),
-      paste0("variant_enrichment_data", suffix, ".csv")
+      paste0("concise_scores_v2", suffix, ".csv")
     ),
     row.names = FALSE
   )
@@ -345,11 +357,8 @@ for (row in seq_len(nrow(temp_table))) {
   cat("\n\nProcessed concise data written to: ",
       file.path(
         dirname(file_path),
-        paste0("variant_enrichment_data", suffix, ".csv")
+        paste0("concise_scores_v2", suffix, ".csv")
       ), "\n")
 }
-
-cat("\n\nComplete! Processed data written to: ",
-    file.path(dirname(file_path), "processed_data.csv"), "\n")
 
 cat("\n\nPost-processing complete.\n\n")

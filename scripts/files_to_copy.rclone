@@ -12,5 +12,5 @@ DiMSum_Project/report.html
 
 parsed_scores_v1.RData
 parsed_scores_v1.csv
-cleanedInput_scores_v2.csv
-concise_cleaned_scores_v3*.csv    
+# cleanedInput_scores_v2.csv (no cleaning now)
+concise_scores_v2*.csv    
