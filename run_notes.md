@@ -71,11 +71,10 @@ _Lokya's della dataset is having some issues running on his hpc, will try and ru
 
 - () run post-process with new script, higher RAM. (35205969)
 ```sh
-sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya --section process, copy
+sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya --section process copy
 ```
-- (2/Nov/26) Test changes in post processing and rclone copying (35206265)
-	- Copied pilot into a `test` dir. 
-	- 
+- (2/Nov/26) Test changes in post processing and rclone copying (35207103)
+	- Copied theoNNN's head 30k into a `test` dir. 
 
 - (S~) ; rerun with higher RAM (35108394)
 	- (*inconsequential*) Failed last stage in dimsum due to not enough variants found (*dubious*); but me due to multiple inputs. Will rerun just post processing/parsing now.

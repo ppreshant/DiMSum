@@ -27,8 +27,11 @@ if (using_default_input) {
 }
 file_path <- args[[1]]
 
+# store post-processing outputs outside the dimsum project dir
+base_dir <- str_c(dirname(file_path), "/../")
+
 # Redirect script output to a log file alongside the input TSV.
-sink(file.path(dirname(file_path), "post_processing.log"))
+sink(file.path(base_dir, "post_processing.log"))
 cat("Post-processing log for input file: ", file_path, "\n")
 cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
 
@@ -296,19 +299,19 @@ processed_data <- bind_cols(filtered_data, scored_columns) |>
 # write CSV file of processed data for downstream analysis
 write.csv(
   processed_data,
-  file = file.path(dirname(file_path), "processed_scores_v1.csv"),
+  file = file.path(base_dir, "processed_scores_v1.csv"),
   row.names = FALSE
 )
 
 # write RData file for downstream analysis
 write_rds(
   processed_data,
-  file = file.path(dirname(file_path), "processed_scores_v1.RDS")
+  file = file.path(base_dir, "processed_scores_v1.RDS")
 )
 
 # message about files written
 cat("\n\nComplete! Processed data written to: ",
-    file.path(dirname(file_path), "processed_scores_v1.csv & .RDS"), "\n")
+    file.path(base_dir, "processed_scores_v1.csv & .RDS"), "\n")
 
 
 for (row in seq_len(nrow(temp_table))) {
@@ -347,7 +350,7 @@ for (row in seq_len(nrow(temp_table))) {
   write.csv(
     processed_concise,
     file = file.path(
-      dirname(file_path),
+      base_dir,
       paste0("concise_scores_v2", suffix, ".csv")
     ),
     row.names = FALSE
@@ -356,7 +359,7 @@ for (row in seq_len(nrow(temp_table))) {
   # message about files written
   cat("\n\nProcessed concise data written to: ",
       file.path(
-        dirname(file_path),
+        base_dir,
         paste0("concise_scores_v2", suffix, ".csv")
       ), "\n")
 }
