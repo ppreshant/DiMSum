@@ -225,6 +225,7 @@ if section_selected copy; then
 
 	# rclone copy step 
 	rclone copy "${output_dir}" "$REMOTE" \
+	--exclude "tmp/**" \
     --ignore-checksum --ignore-size \
     --verbose --stats-one-line \
     --transfers=4 --checkers=8 
