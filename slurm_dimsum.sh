@@ -18,10 +18,10 @@ mkdir -p "$TMPDIR"
 
 # Usage:
 #   sbatch slurm_dimsum.sh [run_name] [--fastq-dir folder] [--section section [section ...]] [-- dimsum_option ...]
-# Run all sections by default. Valid section keywords are: dimsum, parse, copy.
+# Run all sections by default. Valid section keywords are: dimsum, process, copy.
 # Examples:
 #   sbatch slurm_dimsum.sh
-#   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum parse
+#   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum process
 #   sbatch slurm_dimsum.sh my_experiment --fastq-dir my_fastq_folder --section dimsum
 #   sbatch slurm_dimsum.sh della_pilot_ez --section copy
 #   sbatch slurm_dimsum.sh della_pilot_ez --section dimsum -- --startStage 4
@@ -79,7 +79,7 @@ while [[ $# -gt 0 ]]; do
 			;;
 		--help|-h)
 			echo "Usage: sbatch slurm_dimsum.sh [run_name] [--fastq-dir folder] [--section section [section ...]] [-- dimsum_option ...]"
-			echo "Sections: dimsum, parse, copy (all run by default)"
+			echo "Sections: dimsum, process, copy (all run by default)"
 			echo "--fastq-dir sets the FASTQ folder under the HPC data staging directory (defaults to run_name)"
 			exit 0
 			;;
@@ -117,9 +117,9 @@ if [[ ${#sections[@]} -gt 0 ]]; then
 	run_section=false
 	for section in "${sections[@]}"; do
 		case "$section" in
-			dimsum|parse|copy) ;;
+			dimsum|process|copy) ;;
 			*)
-				echo "Invalid section: $section (use dimsum, parse, or copy)" >&2
+				echo "Invalid section: $section (use dimsum, process, or copy)" >&2
 				exit 1
 				;;
 		esac
@@ -161,10 +161,10 @@ if section_selected dimsum; then
 fi
 
 
-## PARSE VARIANT DATA SECTION ----------------------
+## PROCESS the VARIANT DATA SECTION ----------------------
 
-if section_selected parse; then
-	# post-process/parse the variant data.
+if section_selected process; then
+	# post-process/process the variant data.
 	# Create a compact, user-facing variant table after DiMSum completes.
 	# Select: key nucleotide columns and 
 	# calculate: count frequencies and enrichment/leak scores (based on frequencies in input, enriched and no inducer selection cols.)

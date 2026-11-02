@@ -296,19 +296,19 @@ processed_data <- bind_cols(filtered_data, scored_columns) |>
 # write CSV file of processed data for downstream analysis
 write.csv(
   processed_data,
-  file = file.path(dirname(file_path), "parsed_scores_v1.csv"),
+  file = file.path(dirname(file_path), "processed_scores_v1.csv"),
   row.names = FALSE
 )
 
 # write RData file for downstream analysis
 write_rds(
   processed_data,
-  file = file.path(dirname(file_path), "parsed_scores_v1.RData")
+  file = file.path(dirname(file_path), "processed_scores_v1.RData")
 )
 
 # message about files written
 cat("\n\nComplete! Processed data written to: ",
-    file.path(dirname(file_path), "parsed_scores_v1.csv & .RData"), "\n")
+    file.path(dirname(file_path), "processed_scores_v1.csv & .RData"), "\n")
 
 
 for (row in seq_len(nrow(temp_table))) {

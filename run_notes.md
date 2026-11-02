@@ -68,13 +68,23 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 
 # 29/Oct/26 - more runs: Lokya della enriched
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
-- (failed at stage 3, vsearch not writing files) check lokya's run: `squeue -u c837636661@colostate.edu` (35013876)
+
+- () run post-process with new script, higher RAM.
+```sh
+sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya --section process
+```
+- (S~) ; rerun with higher RAM (35108394)
+	- (*inconsequential*) Failed last stage in dimsum due to not enough variants found (*dubious*); but me due to multiple inputs. Will rerun just post processing/parsing now.
+	- `seff` shows used 77.4 GB RAM and ~4.5 + 9.5 h of time 
 - (29/Oct/26) Rerun lokya's enriched full dataset (35062121)
   - 50 GB failed with OOM killed in stage 4 (`processing merged variants...`); data is 30 GB (vs 9 GB for 3R5; .. so 100 GB RAM should be plenty) 
 ```sh
 sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya -- --startStage 4
 ```
 
+- (failed at stage 3, vsearch not writing files) check lokya's run: `squeue -u c837636661@colostate.edu` (35013876)
+
+### separate runs 
 - If OOM issues are causing this (_silently_), let's break the data and run it seperately for each input (PCR number)
   - Created simlinks of the unchanging `.params` using this line :
 ```sh
@@ -82,8 +92,6 @@ for i in {2..6}; do ln -s della_enriched_library_lokya.params della_enriche
 d_PCR$i.params; done
 ```  
  - [ ] Use AI in VScode to break the `.txt` file into multiple and commit it in linux box.
-
-- [x] Add a procedure to sign into rclone/sharepoint in the guide doc
 
 # 16/Oct/26 - incorporate post process
 - Incorporated
