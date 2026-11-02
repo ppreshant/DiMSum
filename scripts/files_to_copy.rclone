@@ -1,0 +1,16 @@
+# Raw files from dimsum
+
+DiMSum_Project/DiMSum_Project_variant_data_merge.RData
+## not includingthe tsv file (too large compared th RData file)
+
+DiMSum_Project/DiMSum_Project_*_variant_data_merge.tsv
+DiMSum_Project/report.html
+
+
+
+# post-processed files (scripts after dimsum)
+
+parsed_scores_v1.RData
+parsed_scores_v1.csv
+cleanedInput_scores_v2.csv
+concise_cleaned_scores_v3*.csv    
