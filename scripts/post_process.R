@@ -23,7 +23,7 @@ filter_lowCounts_indels <- FALSE
 args <- commandArgs(trailingOnly = TRUE)
 using_default_input <- length(args) < 1
 if (using_default_input) {
-  args <- c("theoAptzNNN_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.RData")
+  args <- c("theoAptzNNN_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv")
 }
 file_path <- args[[1]]
 
@@ -34,11 +34,11 @@ cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
 
 if (using_default_input) {
   cat("Usage: Rscript post_process.R <path_to_input_file>\n")
-  cat("defaulting to `theoAptzNNN_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.RData`\n")
+  cat("defaulting to `theoAptzNNN_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv`\n")
 }
 
 data <-
-  read_rds(file_path) |>
+  read_tsv(file_path, lazy = TRUE) |>
   select("nt_seq", "Nham_nt", ends_with("_count")) |>
 
   # Add columns
@@ -303,12 +303,12 @@ write.csv(
 # write RData file for downstream analysis
 write_rds(
   processed_data,
-  file = file.path(dirname(file_path), "processed_scores_v1.RData")
+  file = file.path(dirname(file_path), "processed_scores_v1.RDS")
 )
 
 # message about files written
 cat("\n\nComplete! Processed data written to: ",
-    file.path(dirname(file_path), "processed_scores_v1.csv & .RData"), "\n")
+    file.path(dirname(file_path), "processed_scores_v1.csv & .RDS"), "\n")
 
 
 for (row in seq_len(nrow(temp_table))) {

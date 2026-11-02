@@ -169,7 +169,7 @@ if section_selected process; then
 	# Select: key nucleotide columns and 
 	# calculate: count frequencies and enrichment/leak scores (based on frequencies in input, enriched and no inducer selection cols.)
 	# OLD/ Filter: Drop low count variants in input (0 or 1 counts); indels with enriched counts < 50 (to avoid spurious enrichment scores for indels) 
-	dimsum_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.RData"
+	dimsum_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
 	stage_start=$(date +%s)
 	echo "Post-processing started: $(date --iso-8601=seconds)"
 

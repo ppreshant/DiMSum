@@ -69,10 +69,14 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 29/Oct/26 - more runs: Lokya della enriched
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 
-- () run post-process with new script, higher RAM.
+- () run post-process with new script, higher RAM. (35205969)
 ```sh
-sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya --section process
+sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya --section process, copy
 ```
+- (2/Nov/26) Test changes in post processing and rclone copying (35206265)
+	- Copied pilot into a `test` dir. 
+	- 
+
 - (S~) ; rerun with higher RAM (35108394)
 	- (*inconsequential*) Failed last stage in dimsum due to not enough variants found (*dubious*); but me due to multiple inputs. Will rerun just post processing/parsing now.
 	- `seff` shows used 77.4 GB RAM and ~4.5 + 9.5 h of time 
