@@ -19,7 +19,7 @@ library(tidyverse)
 args <- commandArgs(trailingOnly = TRUE)
 using_default_input <- length(args) < 1
 if (using_default_input) {
-  args <- c("theoAptzNNN_lokya/variant_data_parsed.tsv")
+  args <- c("theoAptzNNN_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.RData")
 }
 file_path <- args[[1]]
 
@@ -30,10 +30,25 @@ cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
 
 if (using_default_input) {
   cat("Usage: Rscript post_process.R <path_to_input_file>\n")
-  cat("defaulting to `theoAptzNNN_lokya/variant_data_parsed.tsv`\n")
+  cat("defaulting to `theoAptzNNN_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.RData`\n")
 }
 
-data <- read_tsv(file_path)
+data <-
+  read_rds(file_path) |>
+  select("nt_seq", "Nham_nt", ends_with("_count")) |>
+
+  # Add columns
+  mutate(sequence_length = str_length(nt_seq)) |> # sequence length
+  mutate(across(
+    ends_with("_count"),
+    ~ .x / sum(.x, na.rm = TRUE),
+    .names = "{.col}_freq"
+  )) |>
+  rename_with(
+    ~ str_replace(.x, "_count_freq$", "_freq"),
+    ends_with("_count_freq")
+  )
+
 
 
 # Detecting key columns ------------------

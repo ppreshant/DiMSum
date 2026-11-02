@@ -164,29 +164,22 @@ fi
 ## PARSE VARIANT DATA SECTION ----------------------
 
 if section_selected parse; then
-	
+	# post-process/parse the variant data.
 	# Create a compact, user-facing variant table after DiMSum completes.
-	# Select: key nucleotide columns and add count frequencies and percentages.
-	merge_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
-	user_file="${output_dir}/variant_data_parsed.tsv"
+	# Select: key nucleotide columns and 
+	# calculate: count frequencies and enrichment/leak scores (based on frequencies in input, enriched and no inducer selection cols.)
+	# OLD/ Filter: Drop low count variants in input (0 or 1 counts); indels with enriched counts < 50 (to avoid spurious enrichment scores for indels) 
+	dimsum_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.RData"
 	stage_start=$(date +%s)
-	echo "Variant parsing started: $(date --iso-8601=seconds)"
+	echo "Post-processing started: $(date --iso-8601=seconds)"
 
-	# Run the Python script to parse the variant data
-	python scripts/parse_variant_data.py "$merge_file" "$user_file"
-
-	echo "Variant parsing finished: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - stage_start) / 60 )) minutes)"
-
-	# post_processing on variant data
-	# Filter: Drop low count variants in input (0 or 1 counts) 
-	# Calculations: Calculates enrichment and leak based on frequencies in input, enriched and no inducer selection cols.
 	post_process_script="./scripts/post_process.R"
 	if [[ ! -f "$post_process_script" ]]; then
 		echo "Post-processing failed: script not found: $post_process_script" >&2
 		exit 1
 	fi
-	if [[ ! -f "$user_file" ]]; then
-		echo "Post-processing failed: parsed variant file not found: $user_file" >&2
+	if [[ ! -f "$dimsum_file" ]]; then
+		echo "Post-processing failed: merged variant file not found: $dimsum_file" >&2
 		exit 1
 	fi
 	if ! mamba activate tidyverse; then
@@ -199,12 +192,12 @@ if section_selected parse; then
 	fi
 
 	post_process_start=$(date +%s)
-	if Rscript --vanilla "$post_process_script" "$user_file"; then
+	if Rscript --vanilla "$post_process_script" "$dimsum_file"; then
 		echo "Post-processing complete: $(date --iso-8601=seconds) (elapsed: $(( ($(date +%s) - post_process_start) / 60 )) minutes)"
 	else
 		post_process_status=$?
-		echo "Post-processing failed with exit status ${post_process_status}: $post_process_script $user_file" >&2
-		echo "Check the post-processing log alongside the input file: ${user_file%/*}/post_processing.log" >&2
+		echo "Post-processing failed with exit status ${post_process_status}: $post_process_script $dimsum_file" >&2
+		echo "Check the post-processing log alongside the input file: ${dimsum_file%/*}/post_processing.log" >&2
 		exit "$post_process_status"
 	fi
 
