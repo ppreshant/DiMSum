@@ -15,6 +15,10 @@
 # import libraries -------------
 library(tidyverse)
 
+# optional switch 
+# (TRUE: reproduce old behavior of filtering out indels with enriched counts < 50)
+filter_lowCounts_indels <- FALSE
+
 # import data
 args <- commandArgs(trailingOnly = TRUE)
 using_default_input <- length(args) < 1
@@ -209,50 +213,59 @@ if (!multiple_temp_mode) {
 
 
 # Processing ------------------
+
 ## filtering --------------
+# Old behavior/obsolete - now done by the user externally
 
-# Threshold filter: for ease of calculations (denominator can't be zero)
-# keep only rows where "Input" col >= 2 (filter out spurious zero/singletons)
-filtered_data <- data |>
-  filter(.data[[input_counts_col]] >= 2) |> # remove rows with Input count < 2
-  select(-ends_with(c("_percent"))) # (x) percentage
+if (!filter_lowCounts_indels) {
 
-# split the data into SNVs and indels and
-# filter the indels more stringently for > 50 in Input count or enriched counts
-snvs <- filtered_data |> filter(!is.na(Nham_nt))
+  # Threshold filter: for ease of calculations (denominator can't be zero)
+  # keep only rows where "Input" col >= 2 (filter out spurious zero/singletons)
+  filtered_counts <- data |>
+    filter(.data[[input_counts_col]] >= 2) |> # remove rows with Input count < 2
+    select(-ends_with(c("_percent"))) # (x) percentage
 
-indels <- filtered_data |>
-  filter(is.na(Nham_nt)) |>
-  filter(if_any(ends_with("count"), ~ . >= 50))
+  # split the data into SNVs and indels and
+  # filter the indels more stringently for > 50 in Input/enriched counts
+  snvs <- filtered_counts |> filter(!is.na(Nham_nt))
 
-# combine the filtered SNVs and indels back into one dataset
-filtered_indels_stringent <- bind_rows(snvs, indels)
+  indels <- filtered_counts |>
+    filter(is.na(Nham_nt)) |>
+    filter(if_any(ends_with("count"), ~ . >= 50))
 
-cat("\n\nFiltering checks ----------------\n\n")
+  # combine the filtered SNVs and indels back into one dataset
+  filtered_data <- bind_rows(snvs, indels)
 
-cat("distribution of Nham_nt in the raw data :\n")
-summarise(data, count = n(), .by = Nham_nt) |> print()
+  cat("\n\nFiltering checks ----------------\n\n")
 
-cat("\n\ndistribution of Nham_nt in the final filtered data :\n")
-summarise(filtered_indels_stringent, count = n(), .by = Nham_nt) |> print()
+  cat("distribution of Nham_nt in the raw data :\n")
+  summarise(data, count = n(), .by = Nham_nt) |> print()
 
-# show how many rows were filtered out
-cat("\n\nSummary --------------\n\n")
-cat("Before filtering: ", nrow(data), " variants\n")
-cat("After filtering: ", nrow(filtered_indels_stringent), " variants\n")
-cat("filtered out: ", nrow(data) - nrow(filtered_indels_stringent), " variants")
+  cat("\n\ndistribution of Nham_nt in the final filtered data :\n")
+  summarise(filtered_data, count = n(), .by = Nham_nt) |> print()
 
-cat("\n\nFiltering complete. Calculating enrichment and leak scores.\n")
+  # show how many rows were filtered out
+  cat("\n\nSummary --------------\n\n")
+  cat("Before filtering: ", nrow(data), " variants\n")
+  cat("After filtering: ", nrow(filtered_data), " variants\n")
+  cat("Removed: ", nrow(data) - nrow(filtered_data), " variants")
+
+  cat("\n\nFiltering complete. Calculating enrichment and leak scores.\n")
+
+} else {
+  filtered_data <- data
+  cat("\n\nFiltering skipped. Calculating enrichment and leak scores.\n")
+}
 
 ## calculation and output ------------------------
 
 column_scorer <- function(numerator, score_name, suffix) {
-  if (is.na(numerator) || !numerator %in% names(filtered_indels_stringent)) {
+  if (is.na(numerator) || !numerator %in% names(filtered_data)) {
     return(NULL)
   }
 
-  score <- filtered_indels_stringent[[numerator]] /
-    filtered_indels_stringent[[input_col]]
+  score <- filtered_data[[numerator]] /
+    filtered_data[[input_col]]
 
   tibble(!!paste0(score_name, suffix) := score)
 }
@@ -271,7 +284,7 @@ scored_columns <- map(seq_len(nrow(temp_table)), function(row) {
 }) |>
   list_cbind()
 
-processed_data <- bind_cols(filtered_indels_stringent, scored_columns) |>
+processed_data <- bind_cols(filtered_data, scored_columns) |>
   # place Nham = 0 first, then arrange by the first enrichment score descending
   arrange(
     as_factor(Nham_nt == 0) |>
