@@ -31,7 +31,7 @@ cat("Post-processing log for input file: ", file_path, "\n")
 cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
 
 # show the base_dir in log
-cat("\nThe base directory is:\n", base_dir, "\n")
+cat("The base directory is:\n", base_dir, "\n")
 
 
 # import data
@@ -107,7 +107,7 @@ nest(series_long) |>
 
     # log the saved file name
     cat("saved file: ",
-        "../processed_scores_v1_PCR", unique(series), ".csv\n")
+        str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv\n"))
   }
 )
 
