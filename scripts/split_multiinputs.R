@@ -7,8 +7,18 @@
 # pivot and nest ; save these as tsv files 
 # go into a for loop to run post_process.R on each of these tsv files
 
+# Parse command line arguments
+args <- commandArgs(trailingOnly = TRUE)
+using_default_input <- length(args) < 1
+if (using_default_input) {
+  args <- c("della_enriched_library_lokya/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv")
+}
+file_path <- args[[1]]
+
+# store post-processing outputs outside the dimsum project dir
 base_dir <- str_c(dirname(file_path), "/../")
 
+# import data
 data <- read_tsv(file_path, lazy = TRUE) |>
   select("nt_seq", "Nham_nt", ends_with("_count")) |>
 

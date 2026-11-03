@@ -29,7 +29,7 @@ if [[ $# -gt 0 && "$1" != --* ]]; then
 fi
 
 dimsum_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
-post_process_script="./split_multiinputs.R"
+post_process_script="./scripts/split_multiinputs.R"
 
 module load miniforge
 mamba activate tidyverse
