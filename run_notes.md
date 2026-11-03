@@ -69,9 +69,18 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 29/Oct/26 - more runs: Lokya della enriched
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 
+- Try job array for PCR 4-6 
+```sh
+sbatch --array=4-6 slurm_dimsum.sh della_enriched_PCR$SLURM_ARRAY_TASK_ID --fastq-dir della_enriched_library_lokya
+```
+
+- Run chunks (explore job array later) (35241758)
+```sh
+sbatch slurm_dimsum.sh della_enriched_PCR3 --fastq-dir della_enriched_library_lokya
+```
 - New script to split PCRx datasets to calculate enrichment and leak
-	- with higher specs; fixed code ~? (35235536)
-	- `sbatch --mem=60G --cpus-per-task=18 --time=6:00:00 scripts/lokya_slurm_multiInputs.sh`
+	- with higher specs - 60GB gave OOM; fixed code ~? (35240518)
+	- `sbatch --mem=100G --cpus-per-task=30 --time=4:00:00 scripts/lokya_slurm_multiInputs.sh`
 
 
 	- Pilot run  (35212356)

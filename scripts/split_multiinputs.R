@@ -117,6 +117,7 @@ merged <- series_long |>
 
   # merge series into column names, so that each series has its own set of columns
   pivot_wider(
+    id_cols = nt_seq,
     names_from = series,
     values_from = matches("_(count|freq|score)$"),
     names_glue = "PCR{series}_{.value}"
