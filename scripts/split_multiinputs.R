@@ -1,0 +1,78 @@
+# Adhoc processing script.
+# Lokya's multliple inputs containing della enriched dataset
+# Author: Prashant K. ; 
+# updated: 2/Nov/26
+
+# open the full data; select a few columns of interest 
+# pivot and nest ; save these as tsv files 
+# go into a for loop to run post_process.R on each of these tsv files
+
+base_dir <- str_c(dirname(file_path), "/../")
+
+data <- read_tsv(file_path, lazy = TRUE) |>
+  select("nt_seq", "Nham_nt", ends_with("_count")) |>
+
+  # Add columns
+  mutate(sequence_length = str_length(nt_seq)) |> # sequence length
+  mutate(across(
+    ends_with("_count"),
+    ~ .x / sum(.x, na.rm = TRUE),
+    .names = "{.col}_freq"
+  )) |>
+  rename_with(
+    ~ str_replace(.x, "_count_freq$", "_freq"),
+    ends_with("_count_freq")
+  ) |>
+
+  # clean up names to only retain NAME_junk_.._.._count > name_count
+  rename_with(
+    ~ str_replace(.x, "^([^_]+).*_(count|freq)$", "\\1_\\2"),
+    ends_with("_count") | ends_with("_freq")
+  )
+
+# Nest each PCR series into a separate tibble, with the series name as a column
+nested <- pivot_longer(data,
+  cols = starts_with("PCR"),
+  names_to = c("series", ".value"),
+  names_pattern = "PCR([0-9])(.*)"
+) |>
+nest(.by = series)
+
+# Calculate enrichment and leak scores for each nested tibble, and save the results as separate tsv files
+# vectorized instead of a loop.
+map(nested$data, 
+  function(df) {
+    # Calculate enrichment and leak scores for each nested tibble
+    df <- df |>
+      mutate(
+      enriched_score = matches("Enriched.*freq") / matches("Input.*freq"),
+      leak_score = matches("Unenriched.*freq") / matches("Input.*freq")
+      ) |>
+
+      # Sort: WT first, then sort by top enrichment descending
+      arrange(
+        as_factor(Nham_nt == 0) |>
+          fct_na_value_to_level("FALSE") |>
+          desc(),
+        desc(enriched_score)
+      )
+
+    # Save the results as a separate tsv file
+    write_csv(df,
+      str_c(base_dir, "processed_scores_v1_PCR", unique(df$series), ".csv")
+    )
+  }
+)
+
+# merge all the nested tibbles into a single tibble, with the series name fused back as the original data
+merged <- unnest(nested, cols = c(data)) |>
+
+  pivot_wider(
+    names_from = series,
+    values_from = matches("_(count|freq|score)$"),
+    names_glue = "PCR{series}_{.value}"
+  )
+
+write_csv(merged,
+  str_c(base_dir, "processed_scores_v1_merged.csv")
+)

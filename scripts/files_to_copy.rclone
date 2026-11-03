@@ -11,6 +11,6 @@ DiMSum_Project/report.html
 # post-processed files (scripts after dimsum)
 
 processed_scores_v1.RDS
-processed_scores_v1.csv
+processed_scores_v1*.csv
 # cleanedInput_scores_v2.csv (no cleaning now)
 concise_scores_v2*.csv    
