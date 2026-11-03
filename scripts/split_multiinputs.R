@@ -60,12 +60,16 @@ nested <- pivot_longer(data,
 ) |>
 nest(.by = series)
 
+# log
+cat("\n--- nested data outline - - - - - \n") 
+nested
+
 # Calculate enrichment and leak scores for each nested tibble, and save the results as separate tsv files
 # vectorized instead of a loop.
-map(nested$data,
-  function(df) {
+map(nested,
+  function(row) {
     # Calculate enrichment, leak, and WT-normalized scores for each nested tibble
-    df <- df |>
+    df <- row$data |>
       mutate(
         catalysis_score = Enriched_freq / Input_freq,
         leak_score = Unenriched_freq / Input_freq,
@@ -82,10 +86,11 @@ map(nested$data,
         desc(catalysis_score)
       )
 
-    # Save the results as a separate tsv file
-    write_csv(df,
-      str_c(base_dir, "processed_scores_v1_PCR", unique(df$series), ".csv")
-    )
+    # Save the results as a separate csv file
+    outfl <- str_c(base_dir, "processed_scores_v1_PCR", unique(row$series), ".csv")
+    write_csv(df, outfl)
+
+    # print(str_c("saved file: ", outfl)) # log
   }
 )
 
@@ -101,3 +106,7 @@ merged <- unnest(nested, cols = c(data)) |>
 write_csv(merged,
   str_c(base_dir, "processed_scores_v1_merged.csv")
 )
+
+# log
+cat("\n--- merge column names - - - - - \n") 
+colnames(merged)
