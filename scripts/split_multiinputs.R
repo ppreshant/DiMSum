@@ -82,30 +82,32 @@ if (verbose_log) {
   series_long
 }
 
+# Save CSV files for each series, with the series name in the file name.
+
 # Nest the series_long tibble by series, so that each series has its own tibble. For arranging before saving separate csv
-nested <- 
-  nest(series_long) |> 
+nest(series_long) |> 
 
-  # Sort: WT first, then sort by top enrichment descending
-  arrange(
-    as_factor(Nham_nt == 0) |>
-      fct_na_value_to_level("FALSE") |>
-      desc(),
-    desc(catalysis_score)
-  )
+  # loop through the series_long df and save each tibble (df) as csv
+  pmap_dfr(
+    function(series, data) {
 
-# loop through the series_long df and save each tibble (df) as csv
-pmap_dfr(nested,
-  function(series, data) {
+    # Sort: WT first, then sort by top enrichment descending
+    sorted <- 
+      arrange(data,
+        as_factor(Nham_nt == 0) |>
+          fct_na_value_to_level("FALSE") |>
+          desc(),
+        desc(catalysis_score)
+      )
 
     # Save the results as a separate csv file
-    write_csv(data, 
+    write_csv(sorted, 
       str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv")
     )
 
     # log the saved file name
     cat("saved file: ",
-        "../processed_scores_v1_PCR", unique(series), ".csv"))
+        "../processed_scores_v1_PCR", unique(series), ".csv\n")
   }
 )
 
