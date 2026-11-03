@@ -68,7 +68,7 @@ map(nested$data,
     df <- df |>
       mutate(
         catalysis_score = Enriched_freq / Input_freq,
-        leak_score = Uneriched_freq / Input_freq,
+        leak_score = Unenriched_freq / Input_freq,
         relative_catalysis = catalysis_score / catalysis_score[Nham_nt == 0],
         relative_leak = leak_score / leak_score[Nham_nt == 0],
         net_catalysis = relative_catalysis / (1 + relative_leak)
