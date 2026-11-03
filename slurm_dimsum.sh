@@ -14,6 +14,9 @@
 export TMPDIR="${SLURM_SCRATCH}/.tmp"
 mkdir -p "$TMPDIR"
 
+# Append task index to argument 1 (run_name); preserve all remaining arguments.
+set -- "${1}${SLURM_ARRAY_TASK_ID}" "${@:2}"
+
 # ------------------end of slurm stuff --------------
 
 # Usage:
