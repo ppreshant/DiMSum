@@ -28,6 +28,11 @@ if [[ $# -gt 0 && "$1" != --* ]]; then
 	shift
 fi
 
+## key variables ----------------------------------
+scratch_dir="/scratch/alpine/$USER"
+output_dir="${scratch_dir}/deepmut_variant_analysis/dimsum_results/${run_name}"
+
+
 dimsum_file="${output_dir}/DiMSum_Project/DiMSum_Project_variant_data_merge.tsv"
 post_process_script="./scripts/split_multiinputs.R"
 
