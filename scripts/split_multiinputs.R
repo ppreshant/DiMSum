@@ -66,10 +66,10 @@ nested
 
 # Calculate enrichment and leak scores for each nested tibble, and save the results as separate tsv files
 # vectorized instead of a loop.
-map(nested,
-  function(row) {
+processed_nested <- pmap_dfr(nested,
+  function(series, data) {
     # Calculate enrichment, leak, and WT-normalized scores for each nested tibble
-    df <- row$data |>
+    df <- data |>
       mutate(
         catalysis_score = Enriched_freq / Input_freq,
         leak_score = Unenriched_freq / Input_freq,
@@ -87,7 +87,7 @@ map(nested,
       )
 
     # Save the results as a separate csv file
-    outfl <- str_c(base_dir, "processed_scores_v1_PCR", unique(row$series), ".csv")
+    outfl <- str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv")
     write_csv(df, outfl)
 
     # print(str_c("saved file: ", outfl)) # log
@@ -95,7 +95,7 @@ map(nested,
 )
 
 # merge all the nested tibbles into a single tibble, with the series name fused back as the original data
-merged <- unnest(nested, cols = c(data)) |>
+merged <- unnest(processed_nested, cols = c(data)) |>
 
   pivot_wider(
     names_from = series,
