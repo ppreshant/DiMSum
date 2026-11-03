@@ -67,8 +67,8 @@ map(nested$data,
     # Calculate enrichment and leak scores for each nested tibble
     df <- df |>
       mutate(
-      enriched_score = matches("Enriched.*freq") / matches("Input.*freq"),
-      leak_score = matches("Unenriched.*freq") / matches("Input.*freq")
+      catalysis_score = Enriched_freq/Input_freq,
+      leak_score = Uneriched_freq/Input_freq) 
       ) |>
 
       # Sort: WT first, then sort by top enrichment descending
@@ -76,7 +76,7 @@ map(nested$data,
         as_factor(Nham_nt == 0) |>
           fct_na_value_to_level("FALSE") |>
           desc(),
-        desc(enriched_score)
+        desc(catalysis_score)
       )
 
     # Save the results as a separate tsv file
