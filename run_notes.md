@@ -69,10 +69,17 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 29/Oct/26 - more runs: Lokya della enriched
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 
-- New script to split PCRx datasets to calculate enrichment and leak (35211054)
+- New script to split PCRx datasets to calculate enrichment and leak
+	- with higher specs (35212895)
+	- `sbatch --mem=60G --cpus-per-task=18 --time=6:00:00 scripts/lokya_slurm_multiInputs.sh`
+
+
+	- Pilot run  (35212356)
 ```sh
 sbatch scripts/lokya_slurm_multiInputs.sh
 ```
+
+
 - (X/A) run post-process with new script, higher RAM. (35205969)
 ```sh
 sbatch --mem=100G --cpus-per-task=26 --time=24:00:00 slurm_dimsum.sh della_enriched_library_lokya --section process copy
