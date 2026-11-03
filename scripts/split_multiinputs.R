@@ -29,6 +29,9 @@ sink(file.path(base_dir, "post_processing.log"))
 cat("Post-processing log for input file: ", file_path, "\n")
 cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
 
+# show the base_dir in log
+cat("\nThe base directory is:\n", base_dir, "\n")
+
 
 # import data
 data <- read_tsv(file_path, lazy = TRUE) |>
@@ -70,8 +73,8 @@ processed_nested <-
   mutate(nested, .by = series,
 
     # Calculate enrichment, leak, and WT-normalized scores for each nested tibble
-    data <- data |>
-      mutate(
+    data <- map(data,
+      \(df) mutate(df,
         catalysis_score = Enriched_freq / Input_freq,
         leak_score = Unenriched_freq / Input_freq,
         relative_catalysis = catalysis_score / catalysis_score[Nham_nt == 0],
@@ -87,16 +90,20 @@ processed_nested <-
         desc(catalysis_score)
       )
          )
+    )
 
 # loop through the nested df and save each tibble (df) as csv
 pmap_dfr(processed_nested,
   function(series, data) {
 
     # Save the results as a separate csv file
-    outfl <- str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv")
-    write_csv(df, outfl)
+    write_csv(df, 
+      str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv")
+    )
 
-    # print(str_c("saved file: ", outfl)) # log
+    # log the saved file name
+    cat("saved file: ",
+        "../processed_scores_v1_PCR", unique(series), ".csv"))
   }
 )
 
