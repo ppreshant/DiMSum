@@ -31,7 +31,7 @@ file_path <- args[[1]]
 base_dir <- str_c(dirname(file_path), "/../")
 
 # Redirect script output to a log file alongside the input TSV.
-sink(file.path(base_dir, "post_processing.log"))
+sink(str_c(base_dir, "post_processing.log"))
 cat("Post-processing log for input file: ", file_path, "\n")
 cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
 
