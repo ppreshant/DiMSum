@@ -7,6 +7,10 @@
 # pivot and nest ; save these as tsv files 
 # go into a for loop to run post_process.R on each of these tsv files
 
+# import libraries -------------
+library(tidyverse)
+
+
 # Parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
 using_default_input <- length(args) < 1
@@ -17,6 +21,12 @@ file_path <- args[[1]]
 
 # store post-processing outputs outside the dimsum project dir
 base_dir <- str_c(dirname(file_path), "/../")
+
+# Redirect script output to a log file alongside the input TSV.
+sink(file.path(base_dir, "post_processing.log"))
+cat("Post-processing log for input file: ", file_path, "\n")
+cat("date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
+
 
 # import data
 data <- read_tsv(file_path, lazy = TRUE) |>
@@ -50,7 +60,7 @@ nest(.by = series)
 
 # Calculate enrichment and leak scores for each nested tibble, and save the results as separate tsv files
 # vectorized instead of a loop.
-map(nested$data, 
+map(nested$data,
   function(df) {
     # Calculate enrichment and leak scores for each nested tibble
     df <- df |>

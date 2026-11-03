@@ -69,7 +69,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 29/Oct/26 - more runs: Lokya della enriched
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 
-- New script to split PCRx datasets to calculate enrichment and leak (35210757)
+- New script to split PCRx datasets to calculate enrichment and leak (35211054)
 ```sh
 sbatch scripts/lokya_slurm_multiInputs.sh
 ```
