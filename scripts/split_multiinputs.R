@@ -95,7 +95,7 @@ processed_nested <- pmap_dfr(nested,
 )
 
 # merge all the nested tibbles into a single tibble, with the series name fused back as the original data
-merged <- unnest(processed_nested, cols = c(data)) |>
+merged <- unnest(processed_nested, cols = data) |>
 
   pivot_wider(
     names_from = series,
