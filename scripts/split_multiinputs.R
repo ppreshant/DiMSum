@@ -101,13 +101,14 @@ nest(series_long) |>
       )
 
     # Save the results as a separate csv file
-    write_csv(sorted, 
-      str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv")
+    output_file <- file.path(
+      base_dir,
+      str_c("processed_scores_v1_PCR", unique(series), ".csv")
     )
+    write_csv(sorted, output_file)
 
     # log the saved file name
-    cat("saved file: ",
-        str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv\n"))
+    cat("saved file: ", output_file, "\n")
   }
 )
 
@@ -123,7 +124,7 @@ merged <- series_long |>
 
 # save a combined CSV file (for any extra analysis)
 write_csv(merged,
-  str_c(base_dir, "processed_scores_v1_merged.csv")
+  file.path(base_dir, "processed_scores_v1_merged.csv")
 )
 
 # log
