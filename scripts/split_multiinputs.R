@@ -10,6 +10,7 @@
 # import libraries -------------
 library(tidyverse)
 
+verbose_log <- FALSE
 
 # Parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
@@ -55,49 +56,50 @@ data <- read_tsv(file_path, lazy = TRUE) |>
     ends_with("_count") | ends_with("_freq")
   )
 
-# Nest each PCR series into a separate tibble, with the series name as a column
-nested <- pivot_longer(data,
+# Bring PCR series into a separate column (Group); calculate within each group and sort. 
+# calcs: WT-normalized catalysis and leak scores, and net catalysis score.
+series_long <- 
+  pivot_longer(data,
   cols = starts_with("PCR"),
   names_to = c("series", ".value"),
   names_pattern = "PCR([0-9])(.*)"
-) |>
-nest(.by = series)
+  ) |> 
 
-# log
-cat("\n--- nested data outline - - - - - \n") 
-nested
+  # perform calculations within each series (due to grouping by)
+  group_by(series) |>
 
-# Calculate enrichment and leak scores for each nested tibble, and save the results as separate tsv files
-# vectorized instead of a loop.
-processed_nested <- 
-  mutate(nested, .by = series,
+  mutate(
+    catalysis_score = Enriched_freq / Input_freq,
+    leak_score = Unenriched_freq / Input_freq,
+    relative_catalysis = catalysis_score / catalysis_score[Nham_nt == 0],
+    relative_leak = leak_score / leak_score[Nham_nt == 0],
+    net_catalysis = relative_catalysis / (1 + relative_leak)
+  )
 
-    # Calculate enrichment, leak, and WT-normalized scores for each nested tibble
-    data <- map(data,
-      \(df) mutate(df,
-        catalysis_score = Enriched_freq / Input_freq,
-        leak_score = Unenriched_freq / Input_freq,
-        relative_catalysis = catalysis_score / catalysis_score[Nham_nt == 0],
-        relative_leak = leak_score / leak_score[Nham_nt == 0],
-        net_catalysis = relative_catalysis / (1 + relative_leak)
-      ) |>
+if (verbose_log) {
+  # log
+  cat("\n--- series_long data outline - - - - - \n") 
+  series_long
+}
 
-      # Sort: WT first, then sort by top enrichment descending
-      arrange(
-        as_factor(Nham_nt == 0) |>
-          fct_na_value_to_level("FALSE") |>
-          desc(),
-        desc(catalysis_score)
-      )
-         )
-    )
+# Nest the series_long tibble by series, so that each series has its own tibble. For arranging before saving separate csv
+nested <- 
+  nest(series_long) |> 
 
-# loop through the nested df and save each tibble (df) as csv
-pmap_dfr(processed_nested,
+  # Sort: WT first, then sort by top enrichment descending
+  arrange(
+    as_factor(Nham_nt == 0) |>
+      fct_na_value_to_level("FALSE") |>
+      desc(),
+    desc(catalysis_score)
+  )
+
+# loop through the series_long df and save each tibble (df) as csv
+pmap_dfr(nested,
   function(series, data) {
 
     # Save the results as a separate csv file
-    write_csv(df, 
+    write_csv(data, 
       str_c(base_dir, "processed_scores_v1_PCR", unique(series), ".csv")
     )
 
@@ -107,9 +109,10 @@ pmap_dfr(processed_nested,
   }
 )
 
-# merge all the nested tibbles into a single tibble, with the series name fused back as the original data
-merged <- unnest(processed_nested, cols = data) |>
+# merge all the series_long tibbles into a single tibble, with the series name fused back as the original data
+merged <- series_long |>
 
+  # merge series into column names, so that each series has its own set of columns
   pivot_wider(
     names_from = series,
     values_from = matches("_(count|freq|score)$"),
