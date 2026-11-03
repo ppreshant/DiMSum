@@ -70,7 +70,7 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 
 - New script to split PCRx datasets to calculate enrichment and leak
-	- with higher specs (35212895)
+	- with higher specs; fixed code ~? (35235536)
 	- `sbatch --mem=60G --cpus-per-task=18 --time=6:00:00 scripts/lokya_slurm_multiInputs.sh`
 
 

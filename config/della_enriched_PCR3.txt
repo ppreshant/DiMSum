@@ -1,0 +1,4 @@
+sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
+PCR3Input	2	0		1	GS2620_BF_ENRCH_R1_001.fastq.gz	GS2620_BF_ENRCH_R2_001.fastq.gz
+PCR3Enriched	2	1	1	1	GS2618_ENRD_R1_001.fastq.gz	GS2618_ENRD_R2_001.fastq.gz
+PCR3Unenriched	2	1	2	1	GS2619_Non_ENRD_R1_001.fastq.gz	GS2619_Non_ENRD_R2_001.fastq.gz
