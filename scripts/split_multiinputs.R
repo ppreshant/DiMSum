@@ -64,11 +64,14 @@ nest(.by = series)
 # vectorized instead of a loop.
 map(nested$data,
   function(df) {
-    # Calculate enrichment and leak scores for each nested tibble
+    # Calculate enrichment, leak, and WT-normalized scores for each nested tibble
     df <- df |>
       mutate(
-      catalysis_score = Enriched_freq/Input_freq,
-      leak_score = Uneriched_freq/Input_freq) 
+        catalysis_score = Enriched_freq / Input_freq,
+        leak_score = Uneriched_freq / Input_freq,
+        relative_catalysis = catalysis_score / first(catalysis_score[Nham_nt == 0]),
+        relative_leak = leak_score / first(leak_score[Nham_nt == 0]),
+        net_catalysis = relative_catalysis / (1 + relative_leak)
       ) |>
 
       # Sort: WT first, then sort by top enrichment descending
