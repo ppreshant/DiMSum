@@ -71,8 +71,8 @@ series_long <-
   mutate(
     catalysis_score = Enriched_freq / Input_freq,
     leak_score = Unenriched_freq / Input_freq,
-    relative_catalysis = catalysis_score / catalysis_score[Nham_nt == 0],
-    relative_leak = leak_score / leak_score[Nham_nt == 0],
+    relative_catalysis = catalysis_score / catalysis_score[Nham_nt == 0 & !is.na(Nham_nt)],
+    relative_leak = leak_score / leak_score[Nham_nt == 0 & !is.na(Nham_nt)],
     net_catalysis = relative_catalysis / (1 + relative_leak)
   )
 
