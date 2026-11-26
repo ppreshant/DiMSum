@@ -2,7 +2,8 @@
 
 # runs dimsum on HPC. (activate using SLURM with the slurm_dimsum.sh script)
 # Run this within the DiMSum directory and the mamba environment.
-# Usage: ./run_dimsum.sh [--environment local|hpc] [--allow-only-caps-substitutions] [run_name] [--fastq-dir folder] [dimsum_option ...]
+# Usage: ./run_dimsum.sh [--environment local|hpc] [run_name] [--fastq-dir folder] [--allow-only-caps-substitutions] [dimsum_option ...]
+# note that order of arguments if present matterss
 
 # Set the run name, defaulting to "della_pilot_ez" if not provided
 environment="local"
@@ -38,12 +39,6 @@ if [[ $# -gt 0 && "$1" != --* ]]; then
     shift
 fi
 
-# capture the substitution restriction flag after the run_name argument.
-if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
-    allow_only_caps_substitutions=true
-    shift
-fi
-
 # The FASTQ folder option is intentionally a tip folder, not a full path.
 if [[ -z "$fastq_tip_folder" && "${1:-}" == "--fastq-dir" ]]; then
     if [[ $# -lt 2 ]]; then
@@ -57,6 +52,12 @@ fi
 if [[ -n "$fastq_tip_folder" && "$fastq_tip_folder" == */* ]]; then
     echo "--fastq-dir must be a folder name, not a path: $fastq_tip_folder" >&2
     exit 1
+fi
+
+# capture the substitution restriction flag after the run_name argument.
+if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
+    allow_only_caps_substitutions=true
+    shift
 fi
 
 dimsum_args=("$@")
