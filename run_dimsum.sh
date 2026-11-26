@@ -19,6 +19,7 @@ fi
 
 # capture the substitution restriction flag before the run_name argument.
 if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
+    echo "Allowing only capital letter substitutions in the wildtype sequence (lowercase letters are fixed bases)"
     allow_only_caps_substitutions=true
     shift
 fi
@@ -56,12 +57,18 @@ fi
 
 # capture the substitution restriction flag after the run_name argument.
 if [[ "${1:-}" == "--allow-only-caps-substitutions" ]]; then
+    echo "Allowing only capital letter substitutions in the wildtype sequence (lowercase letters are fixed bases)"
     allow_only_caps_substitutions=true
     shift
 fi
 
 dimsum_args=("$@")
-echo "Running DiMSum with arguments: ${dimsum_args[*]}"
+
+
+# if argument list is not empty, echo it (useful for debugging and logging)
+if [[ ${#dimsum_args[@]} -gt 0 ]]; then
+    echo "Running DiMSum with arguments: ${dimsum_args[*]}"
+fi
 
 # Select paths for local execution or HPC execution.
 case "$environment" in
