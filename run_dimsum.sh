@@ -60,6 +60,7 @@ if [[ -n "$fastq_tip_folder" && "$fastq_tip_folder" == */* ]]; then
 fi
 
 dimsum_args=("$@")
+echo "Running DiMSum with arguments: ${dimsum_args[*]}"
 
 # Select paths for local execution or HPC execution.
 case "$environment" in
@@ -112,6 +113,8 @@ source "$params_file"
 #   and convert lowercase to uppercase to make them consistent.
 permitted_sequences_args=()
 if [[ "$allow_only_caps_substitutions" == true ]]; then
+
+    # default: passes the full wildtype sequence with N substitutions in allowed positions (originally capital letters).
     permitted_substitutions=$(printf '%s' "$wildtype_sequence" | sed -E 's/[A-Z]/N/g; y/atgc/ATGC/')
     permitted_sequences_args=(--permittedSequences "$permitted_substitutions")
 fi
