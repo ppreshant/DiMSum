@@ -1,0 +1,5 @@
+sample_name	experiment_replicate	selection_id	selection_replicate	technical_replicate	pair1	pair2
+Input30	1	0			25_R1_001.fastq.gz	25_R2_001.fastq.gz
+theoeffect30	1	1	1		26_R1_001.fastq.gz	26_R2_001.fastq.gz
+Leak30	1	1	2		27_R1_001.fastq.gz	27_R2_001.fastq.gz
+Selection30	1	1	3		28_R1_001.fastq.gz	28_R2_001.fastq.gz
