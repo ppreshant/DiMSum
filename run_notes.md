@@ -66,6 +66,14 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
   > Wall time scaling: total work ≈ length × depth = 16x more data to process. Expect wall time in the 12-48h range
   > Suggested to lower numCores to 1 or 2; _will try this later_
 
+# 26/Nov/26 - Madison's amplicon-EZ check
+- Made config; checked/infered primers and template using the 2nd read in Input_25 sample 
+	- Downloaded data using the shortened sbatch script in ampliconez branch of `hpc_utils`
+- Run command 
+```sh
+sbatch --mem=22G --cpus-per-task=6 --time=0:45:00 slurm_dimsum.sh exon_madison -- --allow-only-caps-substitutions
+```
+
 # 29/Oct/26 - more runs: Lokya della enriched
 _Lokya's della dataset is having some issues running on his hpc, will try and run it
 
