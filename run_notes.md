@@ -69,12 +69,23 @@ _Note:_ file length and size are from the Input, R1 read ~ taken to be represent
 # 26/Nov/26 - Madison's amplicon-EZ check
 - Made config; checked/infered primers and template using the 2nd read in Input_25 sample 
 	- Downloaded data using the shortened sbatch script in ampliconez branch of `hpc_utils`
-- Run command 
-	- Error: `Error: Invalid FASTQ file name '/scratch/alpine/c838573989@colostate.edu/data_staging/exon_madison/29_R1_001.fastq.gz' in experimentDesign file (file not found) ; Execution halted`
+- Rerun without masking: 
 ```sh
-sbatch --mem=22G --cpus-per-task=6 --time=0:45:00 slurm_dimsum.sh exon_madison -- --allow-only-caps-substitutions
+sbatch --mem=22G --cpus-per-task=6 --time=0:45:00 slurm_dimsum.sh exon_madison_ez
 ```
-- Later try: (7 + 10 NNK regions) : ` --permittedSequences "NNKNNKNNKNNKNNKNN"`; issue #1 
+- Run with masking (rename the output dir to investigate later : suffix `_masking`)
+```sh
+sbatch --mem=22G --cpus-per-task=6 --time=0:45:00 slurm_dimsum.sh exon_madison_ez -- --allow-only-caps-substitutions
+```
+- Error: Due to some empty columns? 
+	```sh
+	Error in mapply(dimsum__hamming_distance, nt_seq, wt_ntseq) :
+  zero-length inputs cannot be mixed with those of non-zero length
+	Calls: dimsum ... dimsum__process_merged_variants -> [ -> [.data.table -> eval -> eval -> mapply
+	Execution halted
+	```
+- With first run, I was using the full file list causing this 
+	- Error: `Error: Invalid FASTQ file name '/scratch/alpine/c838573989@colostate.edu/data_staging/exon_madison/29_R1_001.fastq.gz' in experimentDesign file (file not found) ; Execution halted`Later try: (7 + 10 NNK regions) : ` --permittedSequences "NNKNNKNNKNNKNNKNN"`; issue #1 
 - 
 
 # 29/Oct/26 - more runs: Lokya della enriched
